@@ -231,6 +231,7 @@
             • KM no disponibles para días 06-14 (se estimarán 80 km promedio por día)
         </div>
 
+        <button class="btn" style="background: linear-gradient(135deg, #f87171, #ef4444); margin-bottom: 0.5rem;" onclick="if(confirm('¿Limpiar datos anteriores y recargar historial?')){localStorage.clear(); loadData();}">🗑️ Limpiar Todo y Cargar Historial</button>
         <button class="btn" onclick="loadData()">Cargar Todo el Historial en la App</button>
         
         <div class="success" id="successMsg">
