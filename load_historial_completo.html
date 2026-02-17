@@ -223,10 +223,10 @@
 
         <div class="info">
             <strong>📝 Notas:</strong><br>
-            • Gastos personales ($78,340) se devolverán con salario formal<br>
+            • Gastos personales ($81,915) se devolverán con salario formal<br>
             • Jornada del 16/02 cerrada correctamente con recaudación $25,186<br>
-            • Jornada de HOY (17/02) arranca con: NX $113,430 | MP $17,587 | Efectivo $24,100 | UW $987<br>
-            • Combustible de hoy ($12,000) ya registrado como gasto pagado desde MP<br>
+            • Jornada de HOY (17/02) arranca con: NX $111,639 | MP $29,431 | Efectivo $24,100 | UW $987<br>
+            • Combustible de hoy ($12,000) ya registrado como gasto pagado desde MP → MP queda en $17,431<br>
             • Contador Uber actual: $2,097 (en curso)<br>
             • KM no disponibles para días 06-14 (se estimarán 80 km promedio por día)
         </div>
@@ -325,7 +325,8 @@
                 gastosMoto: 0,
                 gastosPersonales: 0,
                 startWallets: { nx: 103664, cash: 5600, uber: 27325 },
-                endWallets: { nx: 114489, cash: 20600, uber: 29431 }
+                endWallets: { nx: 114489, cash: 20600, uber: 29431 },
+                ingresoUWaMP: 29431
             },
             {
                 date: '2026-02-16',
@@ -350,7 +351,7 @@
         const todayJourney = {
             date: "2026-02-17",
             kmStart: 4188,
-            startWallets: { nx: 113430, mp: 17587, cash: 24100, uber: 987 },
+            startWallets: { nx: 111639, mp: 29431, cash: 24100, uber: 987 },
             expenses: [
                 {
                     id: Date.now() + 1,
@@ -436,14 +437,15 @@
                     }
 
                     // Crear ingreso (recaudación)
-                    // Para días con saldos reales, calcular desde diferencia de billeteras
-                    // Para el 16/02 hay que sumar también el ingreso UW->NX
-                    let incomeNX, incomeCash, incomeUber;
+                    let incomeNX, incomeCash, incomeUber, incomeMP;
+                    incomeMP = 0;
                     if (day.startWallets && day.endWallets) {
                         const uwaNX = day.ingresoUWaNX || 0;
+                        const uwaMP = day.ingresoUWaMP || 0;
                         incomeNX   = day.endWallets.nx   - day.startWallets.nx   - uwaNX + day.gastosMoto + (day.gastosDetalle ? day.gastosDetalle.filter(g=>g.type!='fuel').reduce((s,g)=>g.paymentTransfer>0?s+g.paymentTransfer:s,0) : day.gastosPersonales * 0.5);
                         incomeCash = day.endWallets.cash  - day.startWallets.cash + (day.gastosDetalle ? day.gastosDetalle.reduce((s,g)=>g.paymentCash>0?s+g.paymentCash:s,0) : (day.gastosMoto + day.gastosPersonales) * 0.5 + day.combustible);
-                        incomeUber = day.endWallets.uber  - day.startWallets.uber;
+                        incomeUber = day.endWallets.uber  - day.startWallets.uber + uwaMP;
+                        incomeMP   = uwaMP;
                     } else {
                         incomeNX   = Math.floor(day.recaudacion * 0.4);
                         incomeCash = Math.floor(day.recaudacion * 0.4);
@@ -453,6 +455,7 @@
                     const income = {
                         id: startTime + 7200000,
                         nx: incomeNX,
+                        mp: incomeMP,
                         cash: incomeCash,
                         uber: incomeUber,
                         timestamp: new Date(startTime + 7200000).toISOString()
