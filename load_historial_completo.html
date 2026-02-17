@@ -313,36 +313,34 @@
                 combustible: 0,
                 gastosMoto: 0,
                 gastosPersonales: 0,
-                // Saldos reales
                 startWallets: { nx: 103664, cash: 5600, uber: 27325 },
                 endWallets: { nx: 114489, cash: 20600, uber: 29431 }
+            },
+            {
+                date: '2026-02-16',
+                kmStart: 4078,
+                kmEnd: 4188,
+                km: 110,
+                recaudacion: 25186,
+                combustible: 0,
+                gastosMoto: 4500,
+                gastosPersonales: 17200,
+                startWallets: { nx: 114489, cash: 20600, uber: 0 },
+                endWallets:   { nx: 111639, cash: 24100, uber: 987 },
+                gastosDetalle: [
+                    { type: "moto",     amount: 4500,  concept: "Aromatizante casco", paymentCash: 4500,  paymentTransfer: 0     },
+                    { type: "personal", amount: 14000, concept: "Comida",             paymentCash: 0,     paymentTransfer: 14000 },
+                    { type: "personal", amount: 3200,  concept: "Cigarrillos",        paymentCash: 3200,  paymentTransfer: 0     }
+                ],
+                ingresoUWaNX: 29431
             }
         ];
 
         const todayJourney = {
-            date: '2026-02-16',
-            kmStart: 4078,
-            startWallets: { nx: 114489, cash: 20600, uber: 29431 },
-            expenses: [
-                {
-                    id: Date.now() - 3600000,
-                    type: 'personal',
-                    amount: 14000,
-                    concept: 'Comida',
-                    paymentCash: 0,
-                    paymentTransfer: 14000,
-                    timestamp: new Date(Date.now() - 3600000).toISOString()
-                },
-                {
-                    id: Date.now() - 1800000,
-                    type: 'personal',
-                    amount: 4500,
-                    concept: 'Aromatizador casco',
-                    paymentCash: 4500,
-                    paymentTransfer: 0,
-                    timestamp: new Date(Date.now() - 1800000).toISOString()
-                }
-            ],
+            date: "2026-02-17",
+            kmStart: 4188,
+            startWallets: { nx: 111639, cash: 24100, uber: 987 },
+            expenses: [],
             incomes: [],
             uberCounter: 0
         };
@@ -355,64 +353,86 @@
                 // Crear jornadas históricas
                 journeysData.forEach((day, index) => {
                     const isLastDay = index === journeysData.length - 1;
-                    const startKm = isLastDay ? day.kmStart : kmAccumulator;
-                    const endKm = isLastDay ? day.kmEnd : (kmAccumulator + day.km);
+                    const hasRealKm = day.kmStart !== undefined;
+                    const startKm = hasRealKm ? day.kmStart : kmAccumulator;
+                    const endKm = hasRealKm ? day.kmEnd : (kmAccumulator + day.km);
                     
                     const startTime = new Date(day.date + 'T08:00:00').getTime();
                     const endTime = new Date(day.date + 'T20:00:00').getTime();
 
                     // Crear gastos
                     const expenses = [];
-                    let expenseTime = startTime + 3600000; // 1 hora después del inicio
+                    let expenseTime = startTime + 3600000;
 
-                    if (day.combustible > 0) {
-                        expenses.push({
-                            id: expenseTime++,
-                            type: 'fuel',
-                            amount: day.combustible,
-                            concept: 'Combustible',
-                            paymentCash: day.combustible,
-                            paymentTransfer: 0,
-                            timestamp: new Date(expenseTime).toISOString()
+                    // Si tiene gastos detallados (ej: 16/02), usarlos directamente
+                    if (day.gastosDetalle) {
+                        day.gastosDetalle.forEach((g, i) => {
+                            expenses.push({
+                                id: expenseTime + i,
+                                type: g.type,
+                                amount: g.amount,
+                                concept: g.concept,
+                                paymentCash: g.paymentCash,
+                                paymentTransfer: g.paymentTransfer,
+                                timestamp: new Date(expenseTime + i * 600000).toISOString()
+                            });
                         });
-                    }
-
-                    if (day.gastosMoto > 0) {
-                        expenses.push({
-                            id: expenseTime++,
-                            type: 'moto',
-                            amount: day.gastosMoto,
-                            concept: 'Mantenimiento/Reparación',
-                            paymentCash: day.gastosMoto * 0.6,
-                            paymentTransfer: day.gastosMoto * 0.4,
-                            timestamp: new Date(expenseTime).toISOString()
-                        });
-                    }
-
-                    if (day.gastosPersonales > 0) {
-                        expenses.push({
-                            id: expenseTime++,
-                            type: 'personal',
-                            amount: day.gastosPersonales,
-                            concept: 'Gastos del día',
-                            paymentCash: day.gastosPersonales * 0.5,
-                            paymentTransfer: day.gastosPersonales * 0.5,
-                            timestamp: new Date(expenseTime).toISOString()
-                        });
+                    } else {
+                        if (day.combustible > 0) {
+                            expenses.push({
+                                id: expenseTime++,
+                                type: 'fuel',
+                                amount: day.combustible,
+                                concept: 'Combustible',
+                                paymentCash: day.combustible,
+                                paymentTransfer: 0,
+                                timestamp: new Date(expenseTime).toISOString()
+                            });
+                        }
+                        if (day.gastosMoto > 0) {
+                            expenses.push({
+                                id: expenseTime++,
+                                type: 'moto',
+                                amount: day.gastosMoto,
+                                concept: 'Mantenimiento/Reparación',
+                                paymentCash: day.gastosMoto * 0.6,
+                                paymentTransfer: day.gastosMoto * 0.4,
+                                timestamp: new Date(expenseTime).toISOString()
+                            });
+                        }
+                        if (day.gastosPersonales > 0) {
+                            expenses.push({
+                                id: expenseTime++,
+                                type: 'personal',
+                                amount: day.gastosPersonales,
+                                concept: 'Gastos del día',
+                                paymentCash: day.gastosPersonales * 0.5,
+                                paymentTransfer: day.gastosPersonales * 0.5,
+                                timestamp: new Date(expenseTime).toISOString()
+                            });
+                        }
                     }
 
                     // Crear ingreso (recaudación)
+                    // Para días con saldos reales, calcular desde diferencia de billeteras
+                    // Para el 16/02 hay que sumar también el ingreso UW->NX
+                    let incomeNX, incomeCash, incomeUber;
+                    if (day.startWallets && day.endWallets) {
+                        const uwaNX = day.ingresoUWaNX || 0;
+                        incomeNX   = day.endWallets.nx   - day.startWallets.nx   - uwaNX + day.gastosMoto + (day.gastosDetalle ? day.gastosDetalle.filter(g=>g.type!='fuel').reduce((s,g)=>g.paymentTransfer>0?s+g.paymentTransfer:s,0) : day.gastosPersonales * 0.5);
+                        incomeCash = day.endWallets.cash  - day.startWallets.cash + (day.gastosDetalle ? day.gastosDetalle.reduce((s,g)=>g.paymentCash>0?s+g.paymentCash:s,0) : (day.gastosMoto + day.gastosPersonales) * 0.5 + day.combustible);
+                        incomeUber = day.endWallets.uber  - day.startWallets.uber;
+                    } else {
+                        incomeNX   = Math.floor(day.recaudacion * 0.4);
+                        incomeCash = Math.floor(day.recaudacion * 0.4);
+                        incomeUber = Math.floor(day.recaudacion * 0.2);
+                    }
+
                     const income = {
                         id: startTime + 7200000,
-                        nx: isLastDay && day.startWallets ? 
-                            (day.endWallets.nx - day.startWallets.nx) : 
-                            Math.floor(day.recaudacion * 0.4),
-                        cash: isLastDay && day.startWallets ? 
-                            (day.endWallets.cash - day.startWallets.cash) : 
-                            Math.floor(day.recaudacion * 0.4),
-                        uber: isLastDay && day.startWallets ? 
-                            (day.endWallets.uber - day.startWallets.uber) : 
-                            Math.floor(day.recaudacion * 0.2),
+                        nx: incomeNX,
+                        cash: incomeCash,
+                        uber: incomeUber,
                         timestamp: new Date(startTime + 7200000).toISOString()
                     };
 
@@ -423,16 +443,8 @@
                         startKm: startKm,
                         endKm: endKm,
                         kmTraveled: endKm - startKm,
-                        startWallets: isLastDay && day.startWallets ? 
-                            day.startWallets : 
-                            { nx: 50000, cash: 10000, uber: 15000 },
-                        endWallets: isLastDay && day.endWallets ? 
-                            day.endWallets : 
-                            { 
-                                nx: 50000 + income.nx, 
-                                cash: 10000 + income.cash, 
-                                uber: 15000 + income.uber 
-                            },
+                        startWallets: day.startWallets || { nx: 50000, cash: 10000, uber: 15000 },
+                        endWallets:   day.endWallets   || { nx: 50000 + income.nx, cash: 10000 + income.cash, uber: 15000 + income.uber },
                         expenses: expenses,
                         incomes: [income],
                         uberCounter: day.recaudacion,
