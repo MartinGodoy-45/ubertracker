@@ -788,6 +788,18 @@
                     </div>
                 </div>
 
+                <div style="background: rgba(59, 130, 246, 0.1); border: 2px solid #3b82f6; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Saldo Mercado Pago</div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #3b82f6;" id="currentMP">$0</div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.75rem; color: var(--text-secondary);">
+                            🟦 Depósitos UW<br>llegan aquí los lunes
+                        </div>
+                    </div>
+                </div>
+
                 <div class="km-display">
                     <div>
                         <div style="font-size: 0.75rem; color: var(--text-secondary);">KM Inicial</div>
@@ -865,6 +877,10 @@
                     <input type="number" class="input-field" id="startNX" placeholder="$0">
                 </div>
                 <div class="wallet-input">
+                    <div class="wallet-name">Mercado Pago</div>
+                    <input type="number" class="input-field" id="startMP" placeholder="$0">
+                </div>
+                <div class="wallet-input">
                     <div class="wallet-name">Efectivo</div>
                     <input type="number" class="input-field" id="startCash" placeholder="$0">
                 </div>
@@ -903,6 +919,10 @@
                         <div class="wallet-name">💳 Transferencia (NX)</div>
                         <input type="number" class="input-field" id="expenseTransfer" placeholder="$0" value="0" oninput="updatePaymentDistribution('transfer')">
                     </div>
+                    <div class="wallet-input">
+                        <div class="wallet-name">🟦 Mercado Pago</div>
+                        <input type="number" class="input-field" id="expenseMP" placeholder="$0" value="0" oninput="updatePaymentDistribution('mp')">
+                    </div>
                 </div>
                 <div id="paymentWarning" style="display: none; margin-top: 0.5rem; padding: 0.75rem; background: rgba(248, 113, 113, 0.1); border: 1px solid var(--accent-red); border-radius: 8px; font-size: 0.85rem; color: var(--accent-red);"></div>
             </div>
@@ -925,6 +945,11 @@
                     <div class="wallet-name">Incremento Naranja NX</div>
                     <input type="number" class="input-field" id="incomeNX" placeholder="$0" value="0">
                     <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">Ej: transferencias de pasajeros o desde UW</div>
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Incremento Mercado Pago</div>
+                    <input type="number" class="input-field" id="incomeMP" placeholder="$0" value="0">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">Ej: depósitos de UW los lunes</div>
                 </div>
                 <div class="wallet-input">
                     <div class="wallet-name">Incremento Efectivo</div>
@@ -956,6 +981,10 @@
                 <div class="wallet-input">
                     <div class="wallet-name">Saldo Final Naranja NX</div>
                     <input type="number" class="input-field" id="endNX" placeholder="$0">
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Saldo Final Mercado Pago</div>
+                    <input type="number" class="input-field" id="endMP" placeholder="$0">
                 </div>
                 <div class="wallet-input">
                     <div class="wallet-name">Saldo Final Efectivo</div>
@@ -1103,6 +1132,7 @@
         function startJourney() {
             const kmStart = parseFloat(document.getElementById('startKm').value) || 0;
             const startNX = parseFloat(document.getElementById('startNX').value) || 0;
+            const startMP = parseFloat(document.getElementById('startMP').value) || 0;
             const startCash = parseFloat(document.getElementById('startCash').value) || 0;
             const startUber = parseFloat(document.getElementById('startUber').value) || 0;
 
@@ -1112,6 +1142,7 @@
                 startKm: kmStart,
                 startWallets: {
                     nx: startNX,
+                    mp: startMP,
                     cash: startCash,
                     uber: startUber
                 },
@@ -1177,6 +1208,7 @@
             document.getElementById('expenseConcept').value = '';
             document.getElementById('expenseCash').value = '0';
             document.getElementById('expenseTransfer').value = '0';
+            document.getElementById('expenseMP').value = '0';
             document.getElementById('paymentWarning').style.display = 'none';
             
             // Ocultar concepto para combustible
@@ -1194,22 +1226,33 @@
             const totalAmount = parseFloat(document.getElementById('expenseAmount').value) || 0;
             const cashInput = document.getElementById('expenseCash');
             const transferInput = document.getElementById('expenseTransfer');
+            const mpInput = document.getElementById('expenseMP');
             const warningDiv = document.getElementById('paymentWarning');
             
             let cash = parseFloat(cashInput.value) || 0;
             let transfer = parseFloat(transferInput.value) || 0;
+            let mp = parseFloat(mpInput.value) || 0;
             
-            // Si se cambió un campo, ajustar el otro automáticamente
-            if (changedField === 'cash') {
+            // Si se cambió un campo, ajustar el otro automáticamente (solo entre cash y transfer cuando mp=0)
+            if (changedField === 'cash' && mp === 0) {
                 transfer = Math.max(0, totalAmount - cash);
                 transferInput.value = transfer;
-            } else if (changedField === 'transfer') {
+            } else if (changedField === 'transfer' && mp === 0) {
                 cash = Math.max(0, totalAmount - transfer);
                 cashInput.value = cash;
+            } else if (changedField === 'mp') {
+                // Si se ingresó MP, limpiar los otros si sumaban el total
+                const remaining = Math.max(0, totalAmount - mp);
+                if (cash + transfer > remaining) {
+                    cashInput.value = 0;
+                    transferInput.value = 0;
+                    cash = 0;
+                    transfer = 0;
+                }
             }
             
             // Validar que la suma coincida
-            const sum = cash + transfer;
+            const sum = cash + transfer + mp;
             if (totalAmount > 0 && Math.abs(sum - totalAmount) > 0.01) {
                 warningDiv.textContent = `⚠️ La suma (${formatCurrency(sum)}) no coincide con el total (${formatCurrency(totalAmount)})`;
                 warningDiv.style.display = 'block';
@@ -1224,19 +1267,20 @@
             const concept = document.getElementById('expenseConcept').value;
             const cash = parseFloat(document.getElementById('expenseCash').value) || 0;
             const transfer = parseFloat(document.getElementById('expenseTransfer').value) || 0;
+            const mp = parseFloat(document.getElementById('expenseMP').value) || 0;
             
             if (!amount || amount <= 0) {
                 alert('Ingresa un monto válido');
                 return;
             }
             
-            if (cash === 0 && transfer === 0) {
-                alert('Debes especificar cómo se pagó (efectivo y/o transferencia)');
+            if (cash === 0 && transfer === 0 && mp === 0) {
+                alert('Debes especificar cómo se pagó (efectivo, NX y/o Mercado Pago)');
                 return;
             }
             
-            if (Math.abs((cash + transfer) - amount) > 0.01) {
-                alert('La suma de efectivo y transferencia debe ser igual al monto total');
+            if (Math.abs((cash + transfer + mp) - amount) > 0.01) {
+                alert('La suma de los métodos de pago debe ser igual al monto total');
                 return;
             }
             
@@ -1252,6 +1296,7 @@
                 concept: currentExpenseType === 'fuel' ? 'Combustible' : concept,
                 paymentCash: cash,
                 paymentTransfer: transfer,
+                paymentMP: mp,
                 timestamp: new Date().toISOString()
             };
             
@@ -1264,6 +1309,7 @@
         // Mostrar modal de ingresos
         function showIncomeModal() {
             document.getElementById('incomeNX').value = 0;
+            document.getElementById('incomeMP').value = 0;
             document.getElementById('incomeCash').value = 0;
             document.getElementById('incomeUber').value = 0;
             document.getElementById('incomeModal').classList.add('active');
@@ -1272,10 +1318,11 @@
         // Agregar ingreso
         function addIncome() {
             const nx = parseFloat(document.getElementById('incomeNX').value) || 0;
+            const mp = parseFloat(document.getElementById('incomeMP').value) || 0;
             const cash = parseFloat(document.getElementById('incomeCash').value) || 0;
             const uber = parseFloat(document.getElementById('incomeUber').value) || 0;
             
-            if (nx === 0 && cash === 0 && uber === 0) {
+            if (nx === 0 && mp === 0 && cash === 0 && uber === 0) {
                 alert('Ingresa al menos un incremento');
                 return;
             }
@@ -1283,6 +1330,7 @@
             const income = {
                 id: Date.now(),
                 nx: nx,
+                mp: mp,
                 cash: cash,
                 uber: uber,
                 timestamp: new Date().toISOString()
@@ -1303,7 +1351,7 @@
             
             // Calcular totales
             const totalIncome = activeJourney.incomes.reduce((sum, inc) => 
-                sum + inc.nx + inc.cash + inc.uber, 0);
+                sum + inc.nx + (inc.mp || 0) + inc.cash + inc.uber, 0);
             
             const fuelExpenses = activeJourney.expenses
                 .filter(e => e.type === 'fuel')
@@ -1330,8 +1378,14 @@
             
             // Calcular saldo actual de Uber Wallet
             const uberIncomeTotal = activeJourney.incomes.reduce((sum, inc) => sum + inc.uber, 0);
-            const currentUberWallet = activeJourney.startWallets.uber + uberIncomeTotal;
+            const currentUberWallet = (activeJourney.startWallets.uber || 0) + uberIncomeTotal;
             document.getElementById('currentUberWallet').textContent = formatCurrency(currentUberWallet);
+
+            // Calcular saldo actual de Mercado Pago
+            const mpIncomeTotal = activeJourney.incomes.reduce((sum, inc) => sum + (inc.mp || 0), 0);
+            const mpExpensesTotal = activeJourney.expenses.reduce((sum, e) => sum + (e.paymentMP || 0), 0);
+            const currentMP = (activeJourney.startWallets.mp || 0) + mpIncomeTotal - mpExpensesTotal;
+            document.getElementById('currentMP').textContent = formatCurrency(currentMP);
             
             // Mostrar gastos
             const expenseList = document.getElementById('expenseList');
@@ -1344,17 +1398,12 @@
                         const typeEmoji = exp.type === 'fuel' ? '⛽' : exp.type === 'moto' ? '🔧' : '🍔';
                         
                         // Determinar método de pago
-                        let paymentText = '';
-                        if (exp.paymentCash > 0 && exp.paymentTransfer > 0) {
-                            paymentText = `💵 ${formatCurrency(exp.paymentCash)} + 💳 ${formatCurrency(exp.paymentTransfer)}`;
-                        } else if (exp.paymentCash > 0) {
-                            paymentText = `💵 Efectivo`;
-                        } else if (exp.paymentTransfer > 0) {
-                            paymentText = `💳 Transferencia`;
-                        } else {
-                            // Retrocompatibilidad con formato antiguo
-                            paymentText = exp.paymentMethod === 'efectivo' ? '💵 Efectivo' : '💳 Transferencia';
-                        }
+                        let paymentParts = [];
+                        if (exp.paymentCash > 0) paymentParts.push(`💵 ${formatCurrency(exp.paymentCash)}`);
+                        if (exp.paymentTransfer > 0) paymentParts.push(`💳 ${formatCurrency(exp.paymentTransfer)}`);
+                        if (exp.paymentMP > 0) paymentParts.push(`🟦 ${formatCurrency(exp.paymentMP)}`);
+                        let paymentText = paymentParts.length > 0 ? paymentParts.join(' + ') : 
+                            (exp.paymentMethod === 'efectivo' ? '💵 Efectivo' : '💳 Transferencia');
                         
                         return `
                             <div class="expense-item">
@@ -1373,6 +1422,7 @@
         function showEndJourneyModal() {
             document.getElementById('endKm').value = '';
             document.getElementById('endNX').value = '';
+            document.getElementById('endMP').value = '';
             document.getElementById('endCash').value = '';
             document.getElementById('endUber').value = '';
             document.getElementById('endJourneyModal').classList.add('active');
@@ -1382,6 +1432,7 @@
         function endJourney() {
             const endKm = parseFloat(document.getElementById('endKm').value) || 0;
             const endNX = parseFloat(document.getElementById('endNX').value) || 0;
+            const endMP = parseFloat(document.getElementById('endMP').value) || 0;
             const endCash = parseFloat(document.getElementById('endCash').value) || 0;
             const endUber = parseFloat(document.getElementById('endUber').value) || 0;
             
@@ -1389,6 +1440,7 @@
             activeJourney.endKm = endKm;
             activeJourney.endWallets = {
                 nx: endNX,
+                mp: endMP,
                 cash: endCash,
                 uber: endUber
             };
