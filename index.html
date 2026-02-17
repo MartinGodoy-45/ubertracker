@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Tracker de jornadas Uber Moto">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
+    <title>Uber Moto Tracker</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Urbanist:wght@400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent-orange: #fb923c;
+            --accent-blue: #60a5fa;
+            --accent-red: #f87171;
+            --accent-green: #4ade80;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+        
+        body {
+            font-family: 'Urbanist', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 1.5rem 1rem;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-pill {
+            flex: 1;
+            background: var(--bg-secondary);
+            padding: 0.75rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-field {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Urbanist', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-orange), #f97316);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-green), #22c55e);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-red), #ef4444);
+            color: white;
+        }
+        
+        .wallet-inputs {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .wallet-input {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+        
+        .wallet-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .active-journey {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid var(--accent-orange);
+        }
+        
+        .journey-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .journey-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .quick-btn {
+            padding: 1.25rem 1rem;
+            border: 2px solid;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .quick-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .quick-btn.fuel {
+            border-color: var(--accent-orange);
+        }
+        
+        .quick-btn.moto {
+            border-color: var(--accent-blue);
+        }
+        
+        .quick-btn.personal {
+            border-color: var(--accent-red);
+        }
+        
+        .quick-btn.income {
+            border-color: var(--accent-green);
+            grid-column: 1 / -1;
+        }
+        
+        .earnings-display {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(34, 197, 94, 0.1));
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .earnings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .earnings-row:last-child {
+            margin-bottom: 0;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--accent-green);
+        }
+        
+        .earnings-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        .earnings-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+        
+        .earnings-value.large {
+            font-size: 1.5rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid var(--border);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        
+        .close-btn:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .payment-method-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .payment-option {
+            padding: 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .payment-option.selected {
+            border-color: var(--accent-orange);
+            background: rgba(251, 146, 60, 0.1);
+        }
+        
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+        
+        .history-item {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .history-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .history-earning {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--accent-green);
+            font-size: 1.1rem;
+        }
+        
+        .history-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .history-detail {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            padding: 0.5rem;
+            z-index: 99;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            border-radius: 8px;
+        }
+        
+        .nav-btn.active {
+            color: var(--accent-orange);
+            background: rgba(251, 146, 60, 0.1);
+        }
+        
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+        
+        .expense-list {
+            margin-top: 1rem;
+        }
+        
+        .expense-item {
+            background: var(--bg-tertiary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .expense-concept {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        
+        .expense-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+        
+        .expense-amount.fuel {
+            color: var(--accent-orange);
+        }
+        
+        .expense-amount.moto {
+            color: var(--accent-blue);
+        }
+        
+        .expense-amount.personal {
+            color: var(--accent-red);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .progress-card {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(249, 115, 22, 0.1));
+            border: 2px solid var(--accent-orange);
+        }
+        
+        .progress-bar {
+            background: var(--bg-tertiary);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-red));
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 6px;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-card-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-card-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .km-display {
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .uber-counter {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(59, 130, 246, 0.1));
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .uber-counter-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .uber-counter-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">🏍️ UBER MOTO TRACKER</div>
+            <div class="header-stats">
+                <div class="stat-pill">
+                    <div class="stat-label">Mes Actual</div>
+                    <div class="stat-value" id="monthTotal">$0</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="stat-label">Promedio/Día</div>
+                    <div class="stat-value" id="dailyAvg">$0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="screen active">
+        <div class="container">
+            <div class="card progress-card">
+                <div class="card-title">💰 Recaudación del Mes</div>
+                <div class="progress-text">
+                    <span>Recaudado (Bruto): <strong id="progressAmount">$0</strong></span>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <span>Cuota Moto:</span>
+                        <span style="color: var(--accent-red); font-weight: 700;">-$467,000</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <span>Combustible:</span>
+                        <span style="color: var(--accent-orange); font-weight: 700;" id="totalFuel">-$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <span>Gastos Moto:</span>
+                        <span style="color: var(--accent-blue); font-weight: 700;" id="totalMoto">-$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--border); font-weight: 700;">
+                        <span>Disponible Real:</span>
+                        <span style="color: var(--accent-green); font-size: 1.1rem;" id="realAvailable">$0</span>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(96, 165, 250, 0.1); border-radius: 8px; border: 1px solid var(--accent-blue);">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">GASTOS PERSONALES (a devolver)</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent-blue);" id="totalPersonal">$0</div>
+                </div>
+            </div>
+
+            <div class="card" style="background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(249, 115, 22, 0.1)); border: 2px solid var(--accent-orange);">
+                <div class="card-title">🎯 Meta Diaria Ajustada</div>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">NECESITAS RECAUDAR POR DÍA</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: var(--accent-orange);" id="dailyGoalDynamic">$0</div>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                        <span>Para cubrir cuota:</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;" id="neededForQuota">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                        <span>Gastos operativos estimados:</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;" id="estimatedOperativeExpenses">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem;">
+                        <span>Días restantes del mes:</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-orange);" id="daysRemaining">0</span>
+                    </div>
+                </div>
+                <div id="goalStatus" style="margin-top: 1rem; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; text-align: center; font-weight: 600;"></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-label">Jornadas Mes</div>
+                    <div class="stat-card-value" id="journeyCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Promedio/Día (Bruto)</div>
+                    <div class="stat-card-value" id="dailyAvgBruto">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Promedio/Día (Neto)</div>
+                    <div class="stat-card-value" id="dailyAvgNeto">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">KM Totales</div>
+                    <div class="stat-card-value" id="totalKm">0</div>
+                </div>
+                <div class="stat-card" style="grid-column: 1 / -1;">
+                    <div class="stat-card-label">Proyección Final (si sigues así)</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Recaudación:</div>
+                            <div class="stat-card-value" style="font-size: 1.1rem;" id="projectionBruto">$0</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Disponible:</div>
+                            <div class="stat-card-value" style="font-size: 1.1rem; color: var(--accent-green);" id="projectionNeto">$0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="activeJourneyCard" style="display: none;">
+                <div class="card-title">🔥 Jornada Activa</div>
+                <button class="btn btn-primary" onclick="goToJourney()">Ver Jornada Actual</button>
+            </div>
+
+            <div class="card" id="noActiveJourneyCard">
+                <div class="card-title">Iniciar Nueva Jornada</div>
+                <button class="btn btn-success" onclick="showStartJourneyModal()">Comenzar Jornada</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journey Screen -->
+    <div id="journeyScreen" class="screen">
+        <div class="container">
+            <div class="card active-journey">
+                <div class="journey-header">
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Jornada activa</div>
+                        <div class="journey-time" id="journeyTimer">00:00:00</div>
+                    </div>
+                </div>
+
+                <div class="uber-counter">
+                    <div class="uber-counter-label">Contador Uber</div>
+                    <div class="uber-counter-value" id="uberCounter">$0</div>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="updateUberCounter()">Actualizar Contador</button>
+                </div>
+
+                <div style="background: rgba(139, 92, 246, 0.1); border: 2px solid #a78bfa; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Saldo en Uber Wallet</div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #a78bfa;" id="currentUberWallet">$0</div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.75rem; color: var(--text-secondary);">
+                            💡 Transfiere a NX<br>cuando llegue a MP
+                        </div>
+                    </div>
+                </div>
+
+                <div class="km-display">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">KM Inicial</div>
+                        <div style="font-size: 1.2rem; font-weight: 700;" id="kmStart">0</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">KM Recorridos</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-orange);" id="kmTraveled">0</div>
+                    </div>
+                </div>
+
+                <div class="earnings-display">
+                    <div class="earnings-row">
+                        <span class="earnings-label">Ganancia Bruta</span>
+                        <span class="earnings-value" id="brutaValue">$0</span>
+                    </div>
+                    <div class="earnings-row">
+                        <span class="earnings-label">Ganancia Operativa</span>
+                        <span class="earnings-value" id="operativaValue">$0</span>
+                    </div>
+                    <div class="earnings-row">
+                        <span class="earnings-label">Ganancia Neta</span>
+                        <span class="earnings-value large" id="netaValue">$0</span>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="quick-btn fuel" onclick="showExpenseModal('fuel')">
+                        ⛽ Combustible
+                    </button>
+                    <button class="quick-btn moto" onclick="showExpenseModal('moto')">
+                        🔧 Gasto Moto
+                    </button>
+                    <button class="quick-btn personal" onclick="showExpenseModal('personal')">
+                        🍔 Gasto Personal
+                    </button>
+                    <button class="quick-btn income" onclick="showIncomeModal()">
+                        💰 Registrar Ingreso
+                    </button>
+                </div>
+
+                <div class="expense-list" id="expenseList"></div>
+
+                <button class="btn btn-danger" onclick="showEndJourneyModal()" style="margin-top: 1rem;">
+                    Finalizar Jornada
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Screen -->
+    <div id="historyScreen" class="screen">
+        <div class="container">
+            <div class="card">
+                <div class="card-title">Historial de Jornadas</div>
+                <div id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start Journey Modal -->
+    <div id="startJourneyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Iniciar Jornada</h3>
+                <button class="close-btn" onclick="closeModal('startJourneyModal')">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">KM Inicial</label>
+                <input type="number" class="input-field" id="startKm" placeholder="0">
+            </div>
+            <div class="wallet-inputs">
+                <div class="wallet-input">
+                    <div class="wallet-name">Naranja NX</div>
+                    <input type="number" class="input-field" id="startNX" placeholder="$0">
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Efectivo</div>
+                    <input type="number" class="input-field" id="startCash" placeholder="$0">
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Uber Wallet</div>
+                    <input type="number" class="input-field" id="startUber" placeholder="$0">
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="startJourney()">Comenzar</button>
+        </div>
+    </div>
+
+    <!-- Expense Modal -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="expenseModalTitle">Agregar Gasto</h3>
+                <button class="close-btn" onclick="closeModal('expenseModal')">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Monto Total</label>
+                <input type="number" class="input-field" id="expenseAmount" placeholder="$0" oninput="updatePaymentDistribution()">
+            </div>
+            <div class="input-group" id="conceptGroup">
+                <label class="input-label">Concepto</label>
+                <input type="text" class="input-field" id="expenseConcept" placeholder="Ej: Mecánico, comida, etc.">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Distribución de Pago</label>
+                <div class="wallet-inputs">
+                    <div class="wallet-input">
+                        <div class="wallet-name">💵 Efectivo</div>
+                        <input type="number" class="input-field" id="expenseCash" placeholder="$0" value="0" oninput="updatePaymentDistribution('cash')">
+                    </div>
+                    <div class="wallet-input">
+                        <div class="wallet-name">💳 Transferencia (NX)</div>
+                        <input type="number" class="input-field" id="expenseTransfer" placeholder="$0" value="0" oninput="updatePaymentDistribution('transfer')">
+                    </div>
+                </div>
+                <div id="paymentWarning" style="display: none; margin-top: 0.5rem; padding: 0.75rem; background: rgba(248, 113, 113, 0.1); border: 1px solid var(--accent-red); border-radius: 8px; font-size: 0.85rem; color: var(--accent-red);"></div>
+            </div>
+            <button class="btn btn-primary" onclick="addExpense()">Agregar Gasto</button>
+        </div>
+    </div>
+
+    <!-- Income Modal -->
+    <div id="incomeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Ingreso</h3>
+                <button class="close-btn" onclick="closeModal('incomeModal')">&times;</button>
+            </div>
+            <div style="background: rgba(96, 165, 250, 0.1); padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+                💡 <strong>Tip:</strong> Registra aquí cuando recibas pagos de pasajeros o cuando transfieras de Uber Wallet a NX
+            </div>
+            <div class="wallet-inputs">
+                <div class="wallet-input">
+                    <div class="wallet-name">Incremento Naranja NX</div>
+                    <input type="number" class="input-field" id="incomeNX" placeholder="$0" value="0">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">Ej: transferencias de pasajeros o desde UW</div>
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Incremento Efectivo</div>
+                    <input type="number" class="input-field" id="incomeCash" placeholder="$0" value="0">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">Ej: pagos en efectivo de pasajeros</div>
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Incremento Uber Wallet</div>
+                    <input type="number" class="input-field" id="incomeUber" placeholder="$0" value="0">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">Ej: pagos por Mercado Pago de pasajeros</div>
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="addIncome()">Registrar</button>
+        </div>
+    </div>
+
+    <!-- End Journey Modal -->
+    <div id="endJourneyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Finalizar Jornada</h3>
+                <button class="close-btn" onclick="closeModal('endJourneyModal')">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">KM Final</label>
+                <input type="number" class="input-field" id="endKm" placeholder="0">
+            </div>
+            <div class="wallet-inputs">
+                <div class="wallet-input">
+                    <div class="wallet-name">Saldo Final Naranja NX</div>
+                    <input type="number" class="input-field" id="endNX" placeholder="$0">
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Saldo Final Efectivo</div>
+                    <input type="number" class="input-field" id="endCash" placeholder="$0">
+                </div>
+                <div class="wallet-input">
+                    <div class="wallet-name">Saldo Final Uber Wallet</div>
+                    <input type="number" class="input-field" id="endUber" placeholder="$0">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('endJourneyModal')">Cancelar</button>
+                <button class="btn btn-success" onclick="endJourney()">Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Uber Counter Modal -->
+    <div id="uberCounterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Actualizar Contador Uber</h3>
+                <button class="close-btn" onclick="closeModal('uberCounterModal')">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Importe Actual en Uber</label>
+                <input type="number" class="input-field" id="uberCounterInput" placeholder="$0">
+            </div>
+            <button class="btn btn-primary" onclick="saveUberCounter()">Guardar</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="switchScreen('dashboard')">
+            <div class="nav-icon">📊</div>
+            <div>Dashboard</div>
+        </button>
+        <button class="nav-btn" onclick="switchScreen('journey')" id="journeyNavBtn">
+            <div class="nav-icon">🏍️</div>
+            <div>Jornada</div>
+        </button>
+        <button class="nav-btn" onclick="switchScreen('history')">
+            <div class="nav-icon">📜</div>
+            <div>Historial</div>
+        </button>
+    </div>
+
+    <script>
+        // Estado de la aplicación
+        let activeJourney = null;
+        let journeys = [];
+        let currentExpenseType = null;
+        let currentPaymentMethod = null;
+        let journeyTimer = null;
+
+        // Inicializar la aplicación
+        function init() {
+            loadData();
+            updateDashboard();
+            updateHistory();
+            checkActiveJourney();
+            
+            // Registrar Service Worker para PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+            }
+        }
+
+        // Cargar datos del localStorage
+        function loadData() {
+            const savedJourneys = localStorage.getItem('journeys');
+            const savedActiveJourney = localStorage.getItem('activeJourney');
+            
+            if (savedJourneys) {
+                journeys = JSON.parse(savedJourneys);
+            }
+            
+            if (savedActiveJourney) {
+                activeJourney = JSON.parse(savedActiveJourney);
+                startTimer();
+            }
+        }
+
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem('journeys', JSON.stringify(journeys));
+            if (activeJourney) {
+                localStorage.setItem('activeJourney', JSON.stringify(activeJourney));
+            } else {
+                localStorage.removeItem('activeJourney');
+            }
+        }
+
+        // Verificar jornada activa
+        function checkActiveJourney() {
+            if (activeJourney) {
+                document.getElementById('activeJourneyCard').style.display = 'block';
+                document.getElementById('noActiveJourneyCard').style.display = 'none';
+                document.getElementById('journeyNavBtn').classList.add('active');
+                updateJourneyDisplay();
+            } else {
+                document.getElementById('activeJourneyCard').style.display = 'none';
+                document.getElementById('noActiveJourneyCard').style.display = 'block';
+                document.getElementById('journeyNavBtn').classList.remove('active');
+            }
+        }
+
+        // Cambiar de pantalla
+        function switchScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            if (screen === 'dashboard') {
+                document.getElementById('dashboardScreen').classList.add('active');
+                document.querySelector('.nav-btn').classList.add('active');
+                updateDashboard();
+            } else if (screen === 'journey') {
+                if (activeJourney) {
+                    document.getElementById('journeyScreen').classList.add('active');
+                    document.getElementById('journeyNavBtn').classList.add('active');
+                    updateJourneyDisplay();
+                } else {
+                    alert('No hay jornada activa');
+                    switchScreen('dashboard');
+                }
+            } else if (screen === 'history') {
+                document.getElementById('historyScreen').classList.add('active');
+                document.querySelectorAll('.nav-btn')[2].classList.add('active');
+                updateHistory();
+            }
+        }
+
+        // Ir a jornada actual
+        function goToJourney() {
+            switchScreen('journey');
+        }
+
+        // Mostrar modal de inicio de jornada
+        function showStartJourneyModal() {
+            document.getElementById('startJourneyModal').classList.add('active');
+        }
+
+        // Iniciar jornada
+        function startJourney() {
+            const kmStart = parseFloat(document.getElementById('startKm').value) || 0;
+            const startNX = parseFloat(document.getElementById('startNX').value) || 0;
+            const startCash = parseFloat(document.getElementById('startCash').value) || 0;
+            const startUber = parseFloat(document.getElementById('startUber').value) || 0;
+
+            activeJourney = {
+                id: Date.now(),
+                startTime: new Date().toISOString(),
+                startKm: kmStart,
+                startWallets: {
+                    nx: startNX,
+                    cash: startCash,
+                    uber: startUber
+                },
+                expenses: [],
+                incomes: [],
+                uberCounter: 0
+            };
+
+            saveData();
+            closeModal('startJourneyModal');
+            checkActiveJourney();
+            switchScreen('journey');
+            startTimer();
+        }
+
+        // Timer de jornada
+        function startTimer() {
+            if (journeyTimer) clearInterval(journeyTimer);
+            
+            journeyTimer = setInterval(() => {
+                if (!activeJourney) return;
+                
+                const start = new Date(activeJourney.startTime);
+                const now = new Date();
+                const diff = now - start;
+                
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('journeyTimer').textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Actualizar contador Uber
+        function updateUberCounter() {
+            document.getElementById('uberCounterInput').value = activeJourney.uberCounter || 0;
+            document.getElementById('uberCounterModal').classList.add('active');
+        }
+
+        function saveUberCounter() {
+            const value = parseFloat(document.getElementById('uberCounterInput').value) || 0;
+            activeJourney.uberCounter = value;
+            saveData();
+            updateJourneyDisplay();
+            closeModal('uberCounterModal');
+        }
+
+        // Mostrar modal de gastos
+        function showExpenseModal(type) {
+            currentExpenseType = type;
+            currentPaymentMethod = null;
+            
+            const titles = {
+                fuel: 'Agregar Combustible',
+                moto: 'Gasto de Moto',
+                personal: 'Gasto Personal'
+            };
+            
+            document.getElementById('expenseModalTitle').textContent = titles[type];
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseConcept').value = '';
+            document.getElementById('expenseCash').value = '0';
+            document.getElementById('expenseTransfer').value = '0';
+            document.getElementById('paymentWarning').style.display = 'none';
+            
+            // Ocultar concepto para combustible
+            if (type === 'fuel') {
+                document.getElementById('conceptGroup').style.display = 'none';
+            } else {
+                document.getElementById('conceptGroup').style.display = 'block';
+            }
+            
+            document.getElementById('expenseModal').classList.add('active');
+        }
+
+        // Actualizar distribución de pagos
+        function updatePaymentDistribution(changedField) {
+            const totalAmount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+            const cashInput = document.getElementById('expenseCash');
+            const transferInput = document.getElementById('expenseTransfer');
+            const warningDiv = document.getElementById('paymentWarning');
+            
+            let cash = parseFloat(cashInput.value) || 0;
+            let transfer = parseFloat(transferInput.value) || 0;
+            
+            // Si se cambió un campo, ajustar el otro automáticamente
+            if (changedField === 'cash') {
+                transfer = Math.max(0, totalAmount - cash);
+                transferInput.value = transfer;
+            } else if (changedField === 'transfer') {
+                cash = Math.max(0, totalAmount - transfer);
+                cashInput.value = cash;
+            }
+            
+            // Validar que la suma coincida
+            const sum = cash + transfer;
+            if (totalAmount > 0 && Math.abs(sum - totalAmount) > 0.01) {
+                warningDiv.textContent = `⚠️ La suma (${formatCurrency(sum)}) no coincide con el total (${formatCurrency(totalAmount)})`;
+                warningDiv.style.display = 'block';
+            } else {
+                warningDiv.style.display = 'none';
+            }
+        }
+
+        // Agregar gasto
+        function addExpense() {
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const concept = document.getElementById('expenseConcept').value;
+            const cash = parseFloat(document.getElementById('expenseCash').value) || 0;
+            const transfer = parseFloat(document.getElementById('expenseTransfer').value) || 0;
+            
+            if (!amount || amount <= 0) {
+                alert('Ingresa un monto válido');
+                return;
+            }
+            
+            if (cash === 0 && transfer === 0) {
+                alert('Debes especificar cómo se pagó (efectivo y/o transferencia)');
+                return;
+            }
+            
+            if (Math.abs((cash + transfer) - amount) > 0.01) {
+                alert('La suma de efectivo y transferencia debe ser igual al monto total');
+                return;
+            }
+            
+            if (currentExpenseType !== 'fuel' && !concept) {
+                alert('Ingresa un concepto');
+                return;
+            }
+            
+            const expense = {
+                id: Date.now(),
+                type: currentExpenseType,
+                amount: amount,
+                concept: currentExpenseType === 'fuel' ? 'Combustible' : concept,
+                paymentCash: cash,
+                paymentTransfer: transfer,
+                timestamp: new Date().toISOString()
+            };
+            
+            activeJourney.expenses.push(expense);
+            saveData();
+            updateJourneyDisplay();
+            closeModal('expenseModal');
+        }
+
+        // Mostrar modal de ingresos
+        function showIncomeModal() {
+            document.getElementById('incomeNX').value = 0;
+            document.getElementById('incomeCash').value = 0;
+            document.getElementById('incomeUber').value = 0;
+            document.getElementById('incomeModal').classList.add('active');
+        }
+
+        // Agregar ingreso
+        function addIncome() {
+            const nx = parseFloat(document.getElementById('incomeNX').value) || 0;
+            const cash = parseFloat(document.getElementById('incomeCash').value) || 0;
+            const uber = parseFloat(document.getElementById('incomeUber').value) || 0;
+            
+            if (nx === 0 && cash === 0 && uber === 0) {
+                alert('Ingresa al menos un incremento');
+                return;
+            }
+            
+            const income = {
+                id: Date.now(),
+                nx: nx,
+                cash: cash,
+                uber: uber,
+                timestamp: new Date().toISOString()
+            };
+            
+            activeJourney.incomes.push(income);
+            saveData();
+            updateJourneyDisplay();
+            closeModal('incomeModal');
+        }
+
+        // Actualizar display de jornada
+        function updateJourneyDisplay() {
+            if (!activeJourney) return;
+            
+            // Actualizar KM
+            document.getElementById('kmStart').textContent = activeJourney.startKm;
+            
+            // Calcular totales
+            const totalIncome = activeJourney.incomes.reduce((sum, inc) => 
+                sum + inc.nx + inc.cash + inc.uber, 0);
+            
+            const fuelExpenses = activeJourney.expenses
+                .filter(e => e.type === 'fuel')
+                .reduce((sum, e) => sum + e.amount, 0);
+            
+            const motoExpenses = activeJourney.expenses
+                .filter(e => e.type === 'moto')
+                .reduce((sum, e) => sum + e.amount, 0);
+            
+            const personalExpenses = activeJourney.expenses
+                .filter(e => e.type === 'personal')
+                .reduce((sum, e) => sum + e.amount, 0);
+            
+            const bruta = totalIncome;
+            const operativa = bruta - fuelExpenses - motoExpenses;
+            const neta = operativa - personalExpenses;
+            
+            document.getElementById('brutaValue').textContent = formatCurrency(bruta);
+            document.getElementById('operativaValue').textContent = formatCurrency(operativa);
+            document.getElementById('netaValue').textContent = formatCurrency(neta);
+            
+            // Contador Uber
+            document.getElementById('uberCounter').textContent = formatCurrency(activeJourney.uberCounter || 0);
+            
+            // Calcular saldo actual de Uber Wallet
+            const uberIncomeTotal = activeJourney.incomes.reduce((sum, inc) => sum + inc.uber, 0);
+            const currentUberWallet = activeJourney.startWallets.uber + uberIncomeTotal;
+            document.getElementById('currentUberWallet').textContent = formatCurrency(currentUberWallet);
+            
+            // Mostrar gastos
+            const expenseList = document.getElementById('expenseList');
+            if (activeJourney.expenses.length === 0) {
+                expenseList.innerHTML = '';
+            } else {
+                expenseList.innerHTML = '<div style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 700; font-size: 0.9rem;">Gastos Registrados:</div>' +
+                    activeJourney.expenses.map(exp => {
+                        const typeClass = exp.type;
+                        const typeEmoji = exp.type === 'fuel' ? '⛽' : exp.type === 'moto' ? '🔧' : '🍔';
+                        
+                        // Determinar método de pago
+                        let paymentText = '';
+                        if (exp.paymentCash > 0 && exp.paymentTransfer > 0) {
+                            paymentText = `💵 ${formatCurrency(exp.paymentCash)} + 💳 ${formatCurrency(exp.paymentTransfer)}`;
+                        } else if (exp.paymentCash > 0) {
+                            paymentText = `💵 Efectivo`;
+                        } else if (exp.paymentTransfer > 0) {
+                            paymentText = `💳 Transferencia`;
+                        } else {
+                            // Retrocompatibilidad con formato antiguo
+                            paymentText = exp.paymentMethod === 'efectivo' ? '💵 Efectivo' : '💳 Transferencia';
+                        }
+                        
+                        return `
+                            <div class="expense-item">
+                                <div>
+                                    <div>${typeEmoji} ${exp.concept}</div>
+                                    <div class="expense-concept">${paymentText}</div>
+                                </div>
+                                <div class="expense-amount ${typeClass}">-${formatCurrency(exp.amount)}</div>
+                            </div>
+                        `;
+                    }).join('');
+            }
+        }
+
+        // Mostrar modal de fin de jornada
+        function showEndJourneyModal() {
+            document.getElementById('endKm').value = '';
+            document.getElementById('endNX').value = '';
+            document.getElementById('endCash').value = '';
+            document.getElementById('endUber').value = '';
+            document.getElementById('endJourneyModal').classList.add('active');
+        }
+
+        // Finalizar jornada
+        function endJourney() {
+            const endKm = parseFloat(document.getElementById('endKm').value) || 0;
+            const endNX = parseFloat(document.getElementById('endNX').value) || 0;
+            const endCash = parseFloat(document.getElementById('endCash').value) || 0;
+            const endUber = parseFloat(document.getElementById('endUber').value) || 0;
+            
+            activeJourney.endTime = new Date().toISOString();
+            activeJourney.endKm = endKm;
+            activeJourney.endWallets = {
+                nx: endNX,
+                cash: endCash,
+                uber: endUber
+            };
+            
+            // Calcular totales
+            const totalIncome = activeJourney.incomes.reduce((sum, inc) => 
+                sum + inc.nx + inc.cash + inc.uber, 0);
+            
+            const fuelExpenses = activeJourney.expenses
+                .filter(e => e.type === 'fuel')
+                .reduce((sum, e) => sum + e.amount, 0);
+            
+            const motoExpenses = activeJourney.expenses
+                .filter(e => e.type === 'moto')
+                .reduce((sum, e) => sum + e.amount, 0);
+            
+            const personalExpenses = activeJourney.expenses
+                .filter(e => e.type === 'personal')
+                .reduce((sum, e) => sum + e.amount, 0);
+            
+            activeJourney.earnings = {
+                bruta: totalIncome,
+                operativa: totalIncome - fuelExpenses - motoExpenses,
+                neta: totalIncome - fuelExpenses - motoExpenses - personalExpenses,
+                fuel: fuelExpenses,
+                moto: motoExpenses,
+                personal: personalExpenses
+            };
+            
+            activeJourney.kmTraveled = endKm - activeJourney.startKm;
+            
+            journeys.push(activeJourney);
+            activeJourney = null;
+            
+            if (journeyTimer) {
+                clearInterval(journeyTimer);
+                journeyTimer = null;
+            }
+            
+            saveData();
+            closeModal('endJourneyModal');
+            checkActiveJourney();
+            switchScreen('dashboard');
+            updateDashboard();
+        }
+
+        // Actualizar dashboard
+        function updateDashboard() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            const monthJourneys = journeys.filter(j => {
+                const jDate = new Date(j.startTime);
+                return jDate.getMonth() === currentMonth && jDate.getFullYear() === currentYear;
+            });
+            
+            // Totales del mes
+            const monthTotalBruto = monthJourneys.reduce((sum, j) => sum + (j.earnings?.bruta || 0), 0);
+            const monthTotalFuel = monthJourneys.reduce((sum, j) => sum + (j.earnings?.fuel || 0), 0);
+            const monthTotalMoto = monthJourneys.reduce((sum, j) => sum + (j.earnings?.moto || 0), 0);
+            const monthTotalPersonal = monthJourneys.reduce((sum, j) => sum + (j.earnings?.personal || 0), 0);
+            
+            const cuotaMoto = 467000;
+            const disponibleReal = monthTotalBruto - cuotaMoto - monthTotalFuel - monthTotalMoto;
+            
+            // Actualizar header
+            document.getElementById('monthTotal').textContent = formatCurrency(monthTotalBruto);
+            
+            const journeyCount = monthJourneys.length;
+            const dailyAvgBruto = journeyCount > 0 ? monthTotalBruto / journeyCount : 0;
+            const dailyAvgNeto = journeyCount > 0 ? monthJourneys.reduce((sum, j) => sum + (j.earnings?.neta || 0), 0) / journeyCount : 0;
+            
+            document.getElementById('dailyAvg').textContent = formatCurrency(dailyAvgBruto);
+            
+            // Card de recaudación
+            document.getElementById('progressAmount').textContent = formatCurrency(monthTotalBruto);
+            document.getElementById('totalFuel').textContent = '-' + formatCurrency(monthTotalFuel);
+            document.getElementById('totalMoto').textContent = '-' + formatCurrency(monthTotalMoto);
+            document.getElementById('realAvailable').textContent = formatCurrency(disponibleReal);
+            document.getElementById('totalPersonal').textContent = formatCurrency(monthTotalPersonal);
+            
+            // CÁLCULO DINÁMICO DE META DIARIA
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = now.getDate();
+            const daysRemaining = daysInMonth - today;
+            
+            // Calcular promedios de gastos operativos
+            const avgFuelPerDay = journeyCount > 0 ? monthTotalFuel / journeyCount : 5000;
+            const avgMotoPerDay = journeyCount > 0 ? monthTotalMoto / journeyCount : 2000;
+            
+            // Gastos operativos estimados para los días restantes
+            const estimatedRemainingExpenses = (avgFuelPerDay + avgMotoPerDay) * daysRemaining;
+            
+            // Lo que aún falta recaudar para cubrir todo
+            const totalNeeded = cuotaMoto + monthTotalFuel + monthTotalMoto + estimatedRemainingExpenses;
+            const stillNeeded = totalNeeded - monthTotalBruto;
+            
+            // Meta diaria ajustada
+            let dailyGoalDynamic = 40000; // Base
+            if (daysRemaining > 0 && stillNeeded > 0) {
+                dailyGoalDynamic = Math.ceil(stillNeeded / daysRemaining);
+            } else if (daysRemaining > 0) {
+                // Ya cumpliste el objetivo, mantener promedio actual
+                dailyGoalDynamic = Math.ceil(dailyAvgBruto);
+            }
+            
+            document.getElementById('dailyGoalDynamic').textContent = formatCurrency(dailyGoalDynamic);
+            document.getElementById('neededForQuota').textContent = formatCurrency(Math.max(0, cuotaMoto + monthTotalFuel + monthTotalMoto - monthTotalBruto));
+            document.getElementById('estimatedOperativeExpenses').textContent = formatCurrency(estimatedRemainingExpenses);
+            document.getElementById('daysRemaining').textContent = daysRemaining;
+            
+            // Mensaje de estado
+            const goalStatus = document.getElementById('goalStatus');
+            if (stillNeeded <= 0) {
+                goalStatus.textContent = '🎉 ¡Ya cubriste la cuota y gastos operativos!';
+                goalStatus.style.background = 'rgba(74, 222, 128, 0.2)';
+                goalStatus.style.border = '1px solid var(--accent-green)';
+                goalStatus.style.color = 'var(--accent-green)';
+            } else if (dailyGoalDynamic > dailyAvgBruto * 1.5) {
+                goalStatus.textContent = '⚠️ Necesitas aumentar el ritmo para llegar';
+                goalStatus.style.background = 'rgba(248, 113, 113, 0.2)';
+                goalStatus.style.border = '1px solid var(--accent-red)';
+                goalStatus.style.color = 'var(--accent-red)';
+            } else if (dailyGoalDynamic > dailyAvgBruto) {
+                goalStatus.textContent = '📈 Vas bien, mantén el esfuerzo';
+                goalStatus.style.background = 'rgba(251, 146, 60, 0.2)';
+                goalStatus.style.border = '1px solid var(--accent-orange)';
+                goalStatus.style.color = 'var(--accent-orange)';
+            } else {
+                goalStatus.textContent = '✅ ¡Vas por buen camino!';
+                goalStatus.style.background = 'rgba(74, 222, 128, 0.2)';
+                goalStatus.style.border = '1px solid var(--accent-green)';
+                goalStatus.style.color = 'var(--accent-green)';
+            }
+            
+            // Stats
+            document.getElementById('journeyCount').textContent = journeyCount;
+            document.getElementById('dailyAvgBruto').textContent = formatCurrency(dailyAvgBruto);
+            document.getElementById('dailyAvgNeto').textContent = formatCurrency(dailyAvgNeto);
+            
+            // Proyecciones
+            const projectionBruto = dailyAvgBruto * daysInMonth;
+            const projectionFuel = monthTotalFuel + (avgFuelPerDay * daysRemaining);
+            const projectionMoto = monthTotalMoto + (avgMotoPerDay * daysRemaining);
+            const projectionNeto = projectionBruto - cuotaMoto - projectionFuel - projectionMoto;
+            
+            document.getElementById('projectionBruto').textContent = formatCurrency(projectionBruto);
+            document.getElementById('projectionNeto').textContent = formatCurrency(projectionNeto);
+            
+            const totalKm = journeys.reduce((sum, j) => sum + (j.kmTraveled || 0), 0);
+            document.getElementById('totalKm').textContent = totalKm.toFixed(0);
+        }
+
+        // Actualizar historial
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (journeys.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div>No hay jornadas registradas</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedJourneys = [...journeys].reverse();
+            
+            historyList.innerHTML = sortedJourneys.map(journey => {
+                const date = new Date(journey.startTime);
+                const dateStr = date.toLocaleDateString('es-AR', { 
+                    day: '2-digit', 
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                const timeStr = date.toLocaleTimeString('es-AR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="history-item">
+                        <div class="history-header">
+                            <div>
+                                <div class="history-date">${dateStr}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">${timeStr}</div>
+                            </div>
+                            <div class="history-earning">${formatCurrency(journey.earnings?.neta || 0)}</div>
+                        </div>
+                        <div class="history-details">
+                            <div class="history-detail">
+                                <span>KM:</span>
+                                <span>${journey.kmTraveled?.toFixed(0) || 0}</span>
+                            </div>
+                            <div class="history-detail">
+                                <span>Combustible:</span>
+                                <span>-${formatCurrency(journey.earnings?.fuel || 0)}</span>
+                            </div>
+                            <div class="history-detail">
+                                <span>Gastos Moto:</span>
+                                <span>-${formatCurrency(journey.earnings?.moto || 0)}</span>
+                            </div>
+                            <div class="history-detail">
+                                <span>Gastos Pers.:</span>
+                                <span>-${formatCurrency(journey.earnings?.personal || 0)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Cerrar modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Formatear moneda
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Cerrar modales al hacer clic fuera
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Inicializar al cargar
+        init();
+    </script>
+</body>
+</html>
