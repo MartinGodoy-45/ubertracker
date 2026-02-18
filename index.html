@@ -857,7 +857,7 @@
                 <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
                     <button class="btn btn-success" style="font-size: 0.85rem; padding: 0.75rem;" onclick="exportData()">📥 Exportar</button>
                     <button class="btn btn-primary" style="font-size: 0.85rem; padding: 0.75rem;" onclick="document.getElementById('importFile').click()">📤 Importar</button>
-                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                    <input type="file" id="importFile" accept=".json,application/json,text/plain" style="display:none" onchange="importData(event)">
                 </div>
                 <div class="card-title">Historial de Jornadas</div>
                 <div id="historyList"></div>
@@ -1440,32 +1440,54 @@
             const endMP = parseFloat(document.getElementById('endMP').value) || 0;
             const endCash = parseFloat(document.getElementById('endCash').value) || 0;
             const endUber = parseFloat(document.getElementById('endUber').value) || 0;
-            
+
             activeJourney.endTime = new Date().toISOString();
             activeJourney.endKm = endKm;
-            activeJourney.endWallets = {
-                nx: endNX,
-                mp: endMP,
-                cash: endCash,
-                uber: endUber
-            };
-            
-            // Calcular totales
-            const totalIncome = activeJourney.incomes.reduce((sum, inc) => 
-                sum + inc.nx + inc.cash + inc.uber, 0);
-            
+            activeJourney.endWallets = { nx: endNX, mp: endMP, cash: endCash, uber: endUber };
+
+            // Gastos por tipo
             const fuelExpenses = activeJourney.expenses
-                .filter(e => e.type === 'fuel')
-                .reduce((sum, e) => sum + e.amount, 0);
-            
+                .filter(e => e.type === 'fuel').reduce((sum, e) => sum + e.amount, 0);
             const motoExpenses = activeJourney.expenses
-                .filter(e => e.type === 'moto')
-                .reduce((sum, e) => sum + e.amount, 0);
-            
+                .filter(e => e.type === 'moto').reduce((sum, e) => sum + e.amount, 0);
             const personalExpenses = activeJourney.expenses
-                .filter(e => e.type === 'personal')
-                .reduce((sum, e) => sum + e.amount, 0);
-            
+                .filter(e => e.type === 'personal').reduce((sum, e) => sum + e.amount, 0);
+
+            // Gastos pagados por cada billetera
+            const gastoNX   = activeJourney.expenses.reduce((sum, e) => sum + (e.paymentTransfer || 0), 0);
+            const gastoMP   = activeJourney.expenses.reduce((sum, e) => sum + (e.paymentMP || 0), 0);
+            const gastoCash = activeJourney.expenses.reduce((sum, e) => sum + (e.paymentCash || 0), 0);
+
+            // Calcular ingresos automáticamente desde diferencia de billeteras + gastos pagados
+            const startWallets = activeJourney.startWallets;
+            const incomeNX   = (endNX   - (startWallets.nx   || 0)) + gastoNX;
+            const incomeMP   = (endMP   - (startWallets.mp   || 0)) + gastoMP;
+            const incomeCash = (endCash - (startWallets.cash || 0)) + gastoCash;
+            const incomeUber = (endUber - (startWallets.uber || 0));
+
+            // Bruta = suma de todos los ingresos calculados (solo positivos)
+            const bruta = Math.max(0, incomeNX) + Math.max(0, incomeMP) + Math.max(0, incomeCash) + Math.max(0, incomeUber);
+
+            // Registrar ingreso calculado automáticamente
+            const autoIncome = {
+                id: Date.now(),
+                nx: Math.max(0, incomeNX),
+                mp: Math.max(0, incomeMP),
+                cash: Math.max(0, incomeCash),
+                uber: Math.max(0, incomeUber),
+                timestamp: new Date().toISOString(),
+                auto: true
+            };
+
+            // Solo agregar si no había ingresos manuales registrados
+            if (activeJourney.incomes.length === 0) {
+                activeJourney.incomes.push(autoIncome);
+            }
+
+            // Recalcular bruta final considerando ingresos manuales si los hay
+            const totalIncome = activeJourney.incomes.reduce((sum, inc) =>
+                sum + (inc.nx || 0) + (inc.mp || 0) + (inc.cash || 0) + (inc.uber || 0), 0);
+
             activeJourney.earnings = {
                 bruta: totalIncome,
                 operativa: totalIncome - fuelExpenses - motoExpenses,
@@ -1474,7 +1496,7 @@
                 moto: motoExpenses,
                 personal: personalExpenses
             };
-            
+
             activeJourney.kmTraveled = endKm - activeJourney.startKm;
             
             journeys.push(activeJourney);
