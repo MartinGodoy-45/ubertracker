@@ -854,6 +854,11 @@
     <div id="historyScreen" class="screen">
         <div class="container">
             <div class="card">
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+                    <button class="btn btn-success" style="font-size: 0.85rem; padding: 0.75rem;" onclick="exportData()">📥 Exportar</button>
+                    <button class="btn btn-primary" style="font-size: 0.85rem; padding: 0.75rem;" onclick="document.getElementById('importFile').click()">📤 Importar</button>
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                </div>
                 <div class="card-title">Historial de Jornadas</div>
                 <div id="historyList"></div>
             </div>
@@ -1673,6 +1678,55 @@
                 }
             });
         });
+
+        // Exportar datos
+        function exportData() {
+            const data = {
+                exportDate: new Date().toISOString(),
+                journeys: JSON.parse(localStorage.getItem('journeys') || '[]'),
+                activeJourney: JSON.parse(localStorage.getItem('activeJourney') || 'null')
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const fecha = new Date().toLocaleDateString('es-AR').replace(/\//g, '-');
+            a.href = url;
+            a.download = `uber-tracker-backup-${fecha}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Importar datos
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.journeys) {
+                        alert('Archivo inválido');
+                        return;
+                    }
+                    if (!confirm(`¿Restaurar backup del ${new Date(data.exportDate).toLocaleDateString('es-AR')}? Se reemplazarán los datos actuales.`)) return;
+                    localStorage.setItem('journeys', JSON.stringify(data.journeys));
+                    if (data.activeJourney) {
+                        localStorage.setItem('activeJourney', JSON.stringify(data.activeJourney));
+                    } else {
+                        localStorage.removeItem('activeJourney');
+                    }
+                    loadData();
+                    updateDashboard();
+                    updateHistory();
+                    checkActiveJourney();
+                    alert('✅ Backup restaurado correctamente');
+                } catch(err) {
+                    alert('Error al leer el archivo: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
 
         // Inicializar al cargar
         init();
