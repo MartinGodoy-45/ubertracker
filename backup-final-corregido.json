@@ -1,0 +1,739 @@
+{
+  "exportDate": "2026-02-18T04:00:34.526Z",
+  "journeys": [
+    {
+      "id": 1770375600000,
+      "startTime": "2026-02-06T11:00:00.000Z",
+      "endTime": "2026-02-06T23:00:00.000Z",
+      "startKm": 3200,
+      "endKm": 3280,
+      "kmTraveled": 80,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 53240,
+        "cash": 13240,
+        "uber": 16620
+      },
+      "expenses": [
+        {
+          "id": 1770379200000,
+          "type": "fuel",
+          "amount": 5000,
+          "concept": "Combustible",
+          "paymentCash": 5000,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-06T12:00:00.001Z"
+        },
+        {
+          "id": 1770379200001,
+          "type": "moto",
+          "amount": 2179,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 1307.3999999999999,
+          "paymentTransfer": 871.6,
+          "timestamp": "2026-02-06T12:00:00.002Z"
+        },
+        {
+          "id": 1770379200002,
+          "type": "personal",
+          "amount": 3500,
+          "concept": "Gastos del día",
+          "paymentCash": 1750,
+          "paymentTransfer": 1750,
+          "timestamp": "2026-02-06T12:00:00.003Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770382800000,
+          "nx": 3240,
+          "mp": 0,
+          "cash": 3240,
+          "uber": 1620,
+          "timestamp": "2026-02-06T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 8101,
+      "earnings": {
+        "bruta": 8101,
+        "operativa": 922,
+        "neta": -2578,
+        "fuel": 5000,
+        "moto": 2179,
+        "personal": 3500
+      }
+    },
+    {
+      "id": 1770462000000,
+      "startTime": "2026-02-07T11:00:00.000Z",
+      "endTime": "2026-02-07T23:00:00.000Z",
+      "startKm": 3280,
+      "endKm": 3365,
+      "kmTraveled": 85,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 66498,
+        "cash": 26498,
+        "uber": 23249
+      },
+      "expenses": [
+        {
+          "id": 1770465600000,
+          "type": "fuel",
+          "amount": 5000,
+          "concept": "Combustible",
+          "paymentCash": 5000,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-07T12:00:00.001Z"
+        },
+        {
+          "id": 1770465600001,
+          "type": "moto",
+          "amount": 5000,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 3000,
+          "paymentTransfer": 2000,
+          "timestamp": "2026-02-07T12:00:00.002Z"
+        },
+        {
+          "id": 1770465600002,
+          "type": "personal",
+          "amount": 8000,
+          "concept": "Gastos del día",
+          "paymentCash": 4000,
+          "paymentTransfer": 4000,
+          "timestamp": "2026-02-07T12:00:00.003Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770469200000,
+          "nx": 16498,
+          "mp": 0,
+          "cash": 16498,
+          "uber": 8249,
+          "timestamp": "2026-02-07T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 41245,
+      "earnings": {
+        "bruta": 41245,
+        "operativa": 31245,
+        "neta": 23245,
+        "fuel": 5000,
+        "moto": 5000,
+        "personal": 8000
+      }
+    },
+    {
+      "id": 1770548400000,
+      "startTime": "2026-02-08T11:00:00.000Z",
+      "endTime": "2026-02-08T23:00:00.000Z",
+      "startKm": 3365,
+      "endKm": 3440,
+      "kmTraveled": 75,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 61207,
+        "cash": 21207,
+        "uber": 20603
+      },
+      "expenses": [
+        {
+          "id": 1770552000000,
+          "type": "fuel",
+          "amount": 5000,
+          "concept": "Combustible",
+          "paymentCash": 5000,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-08T12:00:00.001Z"
+        },
+        {
+          "id": 1770552000001,
+          "type": "personal",
+          "amount": 6000,
+          "concept": "Gastos del día",
+          "paymentCash": 3000,
+          "paymentTransfer": 3000,
+          "timestamp": "2026-02-08T12:00:00.002Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770555600000,
+          "nx": 11207,
+          "mp": 0,
+          "cash": 11207,
+          "uber": 5603,
+          "timestamp": "2026-02-08T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 28019,
+      "earnings": {
+        "bruta": 28019,
+        "operativa": 23019,
+        "neta": 17019,
+        "fuel": 5000,
+        "moto": 0,
+        "personal": 6000
+      }
+    },
+    {
+      "id": 1770634800000,
+      "startTime": "2026-02-09T11:00:00.000Z",
+      "endTime": "2026-02-09T23:00:00.000Z",
+      "startKm": 3440,
+      "endKm": 3522,
+      "kmTraveled": 82,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 62820,
+        "cash": 22820,
+        "uber": 21410
+      },
+      "expenses": [
+        {
+          "id": 1770638400000,
+          "type": "fuel",
+          "amount": 8000,
+          "concept": "Combustible",
+          "paymentCash": 8000,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-09T12:00:00.001Z"
+        },
+        {
+          "id": 1770638400001,
+          "type": "moto",
+          "amount": 3000,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 1800,
+          "paymentTransfer": 1200,
+          "timestamp": "2026-02-09T12:00:00.002Z"
+        },
+        {
+          "id": 1770638400002,
+          "type": "personal",
+          "amount": 5500,
+          "concept": "Gastos del día",
+          "paymentCash": 2750,
+          "paymentTransfer": 2750,
+          "timestamp": "2026-02-09T12:00:00.003Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770642000000,
+          "nx": 12820,
+          "mp": 0,
+          "cash": 12820,
+          "uber": 6410,
+          "timestamp": "2026-02-09T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 32051,
+      "earnings": {
+        "bruta": 32051,
+        "operativa": 21051,
+        "neta": 15551,
+        "fuel": 8000,
+        "moto": 3000,
+        "personal": 5500
+      }
+    },
+    {
+      "id": 1770721200000,
+      "startTime": "2026-02-10T11:00:00.000Z",
+      "endTime": "2026-02-10T23:00:00.000Z",
+      "startKm": 3522,
+      "endKm": 3612,
+      "kmTraveled": 90,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 66150,
+        "cash": 26150,
+        "uber": 23075
+      },
+      "expenses": [
+        {
+          "id": 1770724800000,
+          "type": "moto",
+          "amount": 13500,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 8100,
+          "paymentTransfer": 5400,
+          "timestamp": "2026-02-10T12:00:00.001Z"
+        },
+        {
+          "id": 1770724800001,
+          "type": "personal",
+          "amount": 9000,
+          "concept": "Gastos del día",
+          "paymentCash": 4500,
+          "paymentTransfer": 4500,
+          "timestamp": "2026-02-10T12:00:00.002Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770728400000,
+          "nx": 16150,
+          "mp": 0,
+          "cash": 16150,
+          "uber": 8075,
+          "timestamp": "2026-02-10T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 40375,
+      "earnings": {
+        "bruta": 40375,
+        "operativa": 26875,
+        "neta": 17875,
+        "fuel": 0,
+        "moto": 13500,
+        "personal": 9000
+      }
+    },
+    {
+      "id": 1770807600000,
+      "startTime": "2026-02-11T11:00:00.000Z",
+      "endTime": "2026-02-11T23:00:00.000Z",
+      "startKm": 3612,
+      "endKm": 3682,
+      "kmTraveled": 70,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 55535,
+        "cash": 15535,
+        "uber": 17767
+      },
+      "expenses": [
+        {
+          "id": 1770811200000,
+          "type": "fuel",
+          "amount": 11068,
+          "concept": "Combustible",
+          "paymentCash": 11068,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-11T12:00:00.001Z"
+        },
+        {
+          "id": 1770811200001,
+          "type": "moto",
+          "amount": 21230,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 12738,
+          "paymentTransfer": 8492,
+          "timestamp": "2026-02-11T12:00:00.002Z"
+        },
+        {
+          "id": 1770811200002,
+          "type": "personal",
+          "amount": 4000,
+          "concept": "Gastos del día",
+          "paymentCash": 2000,
+          "paymentTransfer": 2000,
+          "timestamp": "2026-02-11T12:00:00.003Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770814800000,
+          "nx": 5535,
+          "mp": 0,
+          "cash": 5535,
+          "uber": 2767,
+          "timestamp": "2026-02-11T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 13839,
+      "earnings": {
+        "bruta": 13839,
+        "operativa": -18459,
+        "neta": -22459,
+        "fuel": 11068,
+        "moto": 21230,
+        "personal": 4000
+      }
+    },
+    {
+      "id": 1770894000000,
+      "startTime": "2026-02-12T11:00:00.000Z",
+      "endTime": "2026-02-12T23:00:00.000Z",
+      "startKm": 3682,
+      "endKm": 3770,
+      "kmTraveled": 88,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 63860,
+        "cash": 23860,
+        "uber": 21930
+      },
+      "expenses": [
+        {
+          "id": 1770897600000,
+          "type": "moto",
+          "amount": 8326,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 4995.599999999999,
+          "paymentTransfer": 3330.4,
+          "timestamp": "2026-02-12T12:00:00.001Z"
+        },
+        {
+          "id": 1770897600001,
+          "type": "personal",
+          "amount": 7215,
+          "concept": "Gastos del día",
+          "paymentCash": 3607.5,
+          "paymentTransfer": 3607.5,
+          "timestamp": "2026-02-12T12:00:00.002Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770901200000,
+          "nx": 13860,
+          "mp": 0,
+          "cash": 13860,
+          "uber": 6930,
+          "timestamp": "2026-02-12T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 34652,
+      "earnings": {
+        "bruta": 34652,
+        "operativa": 26326,
+        "neta": 19111,
+        "fuel": 0,
+        "moto": 8326,
+        "personal": 7215
+      }
+    },
+    {
+      "id": 1770980400000,
+      "startTime": "2026-02-13T11:00:00.000Z",
+      "endTime": "2026-02-13T23:00:00.000Z",
+      "startKm": 3770,
+      "endKm": 3848,
+      "kmTraveled": 78,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 61460,
+        "cash": 21460,
+        "uber": 20730
+      },
+      "expenses": [
+        {
+          "id": 1770984000000,
+          "type": "moto",
+          "amount": 4600,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 2760,
+          "paymentTransfer": 1840,
+          "timestamp": "2026-02-13T12:00:00.001Z"
+        },
+        {
+          "id": 1770984000001,
+          "type": "personal",
+          "amount": 7000,
+          "concept": "Gastos del día",
+          "paymentCash": 3500,
+          "paymentTransfer": 3500,
+          "timestamp": "2026-02-13T12:00:00.002Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1770987600000,
+          "nx": 11460,
+          "mp": 0,
+          "cash": 11460,
+          "uber": 5730,
+          "timestamp": "2026-02-13T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 28652,
+      "earnings": {
+        "bruta": 28652,
+        "operativa": 24052,
+        "neta": 17052,
+        "fuel": 0,
+        "moto": 4600,
+        "personal": 7000
+      }
+    },
+    {
+      "id": 1771066800000,
+      "startTime": "2026-02-14T11:00:00.000Z",
+      "endTime": "2026-02-14T23:00:00.000Z",
+      "startKm": 3848,
+      "endKm": 3923,
+      "kmTraveled": 75,
+      "startWallets": {
+        "nx": 50000,
+        "cash": 10000,
+        "uber": 15000
+      },
+      "endWallets": {
+        "nx": 61262,
+        "cash": 21262,
+        "uber": 20631
+      },
+      "expenses": [
+        {
+          "id": 1771070400000,
+          "type": "fuel",
+          "amount": 13182,
+          "concept": "Combustible",
+          "paymentCash": 13182,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-14T12:00:00.001Z"
+        },
+        {
+          "id": 1771070400001,
+          "type": "moto",
+          "amount": 2000,
+          "concept": "Mantenimiento/Reparación",
+          "paymentCash": 1200,
+          "paymentTransfer": 800,
+          "timestamp": "2026-02-14T12:00:00.002Z"
+        },
+        {
+          "id": 1771070400002,
+          "type": "personal",
+          "amount": 14500,
+          "concept": "Gastos del día",
+          "paymentCash": 7250,
+          "paymentTransfer": 7250,
+          "timestamp": "2026-02-14T12:00:00.003Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1771074000000,
+          "nx": 11262,
+          "mp": 0,
+          "cash": 11262,
+          "uber": 5631,
+          "timestamp": "2026-02-14T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 28156,
+      "earnings": {
+        "bruta": 28156,
+        "operativa": 12974,
+        "neta": -1526,
+        "fuel": 13182,
+        "moto": 2000,
+        "personal": 14500
+      }
+    },
+    {
+      "id": 1771153200000,
+      "startTime": "2026-02-15T11:00:00.000Z",
+      "endTime": "2026-02-15T23:00:00.000Z",
+      "startKm": 3990,
+      "endKm": 4078,
+      "kmTraveled": 88,
+      "startWallets": {
+        "nx": 103664,
+        "cash": 5600,
+        "uber": 27325
+      },
+      "endWallets": {
+        "nx": 114489,
+        "cash": 20600,
+        "uber": 29431
+      },
+      "expenses": [],
+      "incomes": [
+        {
+          "id": 1771160400000,
+          "nx": 10825,
+          "mp": 29431,
+          "cash": 15000,
+          "uber": 31537,
+          "timestamp": "2026-02-15T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 27931,
+      "earnings": {
+        "bruta": 27931,
+        "operativa": 27931,
+        "neta": 27931,
+        "fuel": 0,
+        "moto": 0,
+        "personal": 0
+      }
+    },
+    {
+      "id": 1771239600000,
+      "startTime": "2026-02-16T11:00:00.000Z",
+      "endTime": "2026-02-16T23:00:00.000Z",
+      "startKm": 4078,
+      "endKm": 4188,
+      "kmTraveled": 110,
+      "startWallets": {
+        "nx": 114489,
+        "cash": 20600,
+        "uber": 0
+      },
+      "endWallets": {
+        "nx": 111639,
+        "cash": 24100,
+        "uber": 987
+      },
+      "expenses": [
+        {
+          "id": 1771243200000,
+          "type": "moto",
+          "amount": 4500,
+          "concept": "Aromatizante casco",
+          "paymentCash": 4500,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-16T12:00:00.000Z"
+        },
+        {
+          "id": 1771243200001,
+          "type": "personal",
+          "amount": 14000,
+          "concept": "Comida",
+          "paymentCash": 0,
+          "paymentTransfer": 14000,
+          "timestamp": "2026-02-16T12:10:00.000Z"
+        },
+        {
+          "id": 1771243200002,
+          "type": "personal",
+          "amount": 3200,
+          "concept": "Cigarrillos",
+          "paymentCash": 3200,
+          "paymentTransfer": 0,
+          "timestamp": "2026-02-16T12:20:00.000Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1771246800000,
+          "nx": -18281,
+          "mp": 0,
+          "cash": 11200,
+          "uber": 987,
+          "timestamp": "2026-02-16T13:00:00.000Z"
+        }
+      ],
+      "uberCounter": 25186,
+      "earnings": {
+        "bruta": 25186,
+        "operativa": 20686,
+        "neta": 3486,
+        "fuel": 0,
+        "moto": 4500,
+        "personal": 17200
+      }
+    },
+    {
+      "id": 1771359663359,
+      "startTime": "2026-02-17T11:00:00.000Z",
+      "startKm": 4188,
+      "startWallets": {
+        "nx": 111639,
+        "mp": 29431,
+        "cash": 24100,
+        "uber": 987
+      },
+      "expenses": [
+        {
+          "id": 1771359652307,
+          "type": "fuel",
+          "amount": 12000,
+          "concept": "Combustible",
+          "paymentCash": 0,
+          "paymentTransfer": 0,
+          "paymentMP": 12000,
+          "timestamp": "2026-02-17T20:20:52.306Z"
+        },
+        {
+          "id": 1771369420325,
+          "type": "personal",
+          "amount": 1700,
+          "concept": "Bebida",
+          "paymentCash": 1700,
+          "paymentTransfer": 0,
+          "paymentMP": 0,
+          "timestamp": "2026-02-17T23:03:40.325Z"
+        },
+        {
+          "id": 1771384143942,
+          "type": "personal",
+          "amount": 2800,
+          "concept": "Bebida",
+          "paymentCash": 2800,
+          "paymentTransfer": 0,
+          "paymentMP": 0,
+          "timestamp": "2026-02-18T03:09:03.942Z"
+        }
+      ],
+      "incomes": [
+        {
+          "id": 1771370000000,
+          "nx": 12334,
+          "mp": 0,
+          "cash": 23566,
+          "uber": 2356,
+          "timestamp": "2026-02-17T23:00:00.000Z"
+        }
+      ],
+      "uberCounter": 2097,
+      "endTime": "2026-02-18T03:13:29.205Z",
+      "endKm": 4339,
+      "endWallets": {
+        "nx": 123973,
+        "mp": 17587,
+        "cash": 43300,
+        "uber": 3343
+      },
+      "earnings": {
+        "bruta": 38256,
+        "operativa": 26256,
+        "neta": 21756,
+        "fuel": 12000,
+        "moto": 0,
+        "personal": 4500
+      },
+      "kmTraveled": 151
+    }
+  ],
+  "activeJourney": null
+}
