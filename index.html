@@ -982,6 +982,10 @@
                 <label class="input-label">KM Final</label>
                 <input type="number" class="input-field" id="endKm" placeholder="0">
             </div>
+            <div class="input-group">
+                <label class="input-label">Contador Uber (total del día)</label>
+                <input type="number" class="input-field" id="endUberCounter" placeholder="$0">
+            </div>
             <div class="wallet-inputs">
                 <div class="wallet-input">
                     <div class="wallet-name">Saldo Final Naranja NX</div>
@@ -1426,8 +1430,9 @@
         // Mostrar modal de fin de jornada
         function showEndJourneyModal() {
             document.getElementById('endKm').value = '';
-            document.getElementById('endNX').value = '';
+            document.getElementById('endUberCounter').value = activeJourney?.uberCounter || '';
             document.getElementById('endMP').value = '';
+            document.getElementById('endNX').value = '';
             document.getElementById('endCash').value = '';
             document.getElementById('endUber').value = '';
             document.getElementById('endJourneyModal').classList.add('active');
@@ -1436,6 +1441,7 @@
         // Finalizar jornada
         function endJourney() {
             const endKm = parseFloat(document.getElementById('endKm').value) || 0;
+            const endUberCounter = parseFloat(document.getElementById('endUberCounter').value) || activeJourney.uberCounter || 0;
             const endNX = parseFloat(document.getElementById('endNX').value) || 0;
             const endMP = parseFloat(document.getElementById('endMP').value) || 0;
             const endCash = parseFloat(document.getElementById('endCash').value) || 0;
@@ -1443,6 +1449,7 @@
 
             activeJourney.endTime = new Date().toISOString();
             activeJourney.endKm = endKm;
+            activeJourney.uberCounter = endUberCounter;
             activeJourney.endWallets = { nx: endNX, mp: endMP, cash: endCash, uber: endUber };
 
             // Gastos por tipo
