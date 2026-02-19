@@ -671,7 +671,7 @@
                 <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
                         <span>Cuota Moto:</span>
-                        <span style="color: var(--accent-red); font-weight: 700;">-$467,000</span>
+                        <span style="color: var(--accent-red); font-weight: 700;">-$475,648</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
                         <span>Combustible:</span>
@@ -1538,7 +1538,7 @@
             const monthTotalMoto = monthJourneys.reduce((sum, j) => sum + (j.earnings?.moto || 0), 0);
             const monthTotalPersonal = monthJourneys.reduce((sum, j) => sum + (j.earnings?.personal || 0), 0);
             
-            const cuotaMoto = 467000;
+            const cuotaMoto = 475648;
             const disponibleReal = monthTotalBruto - cuotaMoto - monthTotalFuel - monthTotalMoto;
             
             // Actualizar header
