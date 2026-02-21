@@ -1471,6 +1471,9 @@
             document.getElementById('endJourneyModal').classList.add('active');
         }
 
+        // Guardar preview data para usar en endJourney
+        let previewData = null;
+
         // Preview antes de finalizar
         function previewEndJourney() {
             const endKm    = parseFloat(document.getElementById('endKm').value) || 0;
@@ -1478,6 +1481,10 @@
             const endMP    = parseFloat(document.getElementById('endMP').value) || 0;
             const endCash  = parseFloat(document.getElementById('endCash').value) || 0;
             const endUber  = parseFloat(document.getElementById('endUber').value) || 0;
+            const endUberCounter = parseFloat(document.getElementById('endUberCounter').value) || activeJourney.uberCounter || 0;
+
+            // Guardar para usar en endJourney
+            previewData = { endKm, endNX, endMP, endCash, endUber, endUberCounter };
 
             const start = activeJourney.startWallets;
 
@@ -1550,12 +1557,8 @@
 
         // Finalizar jornada
         function endJourney() {
-            const endKm = parseFloat(document.getElementById('endKm').value) || 0;
-            const endUberCounter = parseFloat(document.getElementById('endUberCounter').value) || activeJourney.uberCounter || 0;
-            const endNX = parseFloat(document.getElementById('endNX').value) || 0;
-            const endMP = parseFloat(document.getElementById('endMP').value) || 0;
-            const endCash = parseFloat(document.getElementById('endCash').value) || 0;
-            const endUber = parseFloat(document.getElementById('endUber').value) || 0;
+            if (!previewData) return;
+            const { endKm, endNX, endMP, endCash, endUber, endUberCounter } = previewData;
 
             activeJourney.endTime = new Date().toISOString();
             activeJourney.endKm = endKm;
