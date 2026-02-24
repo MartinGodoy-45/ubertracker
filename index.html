@@ -1540,7 +1540,7 @@
             if (incNX < -5000)   warnings.push(`⚠️ NX bajó ${formatCurrency(Math.abs(incNX))} — ¿correcto?`);
             if (incMP < -5000)   warnings.push(`⚠️ MP bajó ${formatCurrency(Math.abs(incMP))} — ¿correcto?`);
             if (incCash < -5000) warnings.push(`⚠️ Efectivo bajó ${formatCurrency(Math.abs(incCash))} — ¿pusiste el saldo TOTAL o solo lo nuevo?`);
-            if (incUber < 0)     warnings.push(`⚠️ UW bajó ${formatCurrency(Math.abs(incUber))} — ¿correcto?`);
+            if (incUber < 0)     warnings.push(`ℹ️ UW bajó ${formatCurrency(Math.abs(incUber))} — normal si Uber vació tu wallet (se deposita el lunes en MP)`);
             if (bruta === 0)     warnings.push(`⚠️ La recaudación calculada es $0 — revisá los saldos finales`);
 
             const warnDiv = document.getElementById('previewWarning');
@@ -1557,7 +1557,17 @@
 
         // Finalizar jornada
         function endJourney() {
-            if (!previewData) return;
+            // Si no hay previewData, intentar leer del formulario directamente
+            if (!previewData) {
+                previewData = {
+                    endKm: parseFloat(document.getElementById('endKm').value) || 0,
+                    endNX: parseFloat(document.getElementById('endNX').value) || 0,
+                    endMP: parseFloat(document.getElementById('endMP').value) || 0,
+                    endCash: parseFloat(document.getElementById('endCash').value) || 0,
+                    endUber: parseFloat(document.getElementById('endUber').value) || 0,
+                    endUberCounter: parseFloat(document.getElementById('endUberCounter').value) || activeJourney.uberCounter || 0
+                };
+            }
             const { endKm, endNX, endMP, endCash, endUber, endUberCounter } = previewData;
 
             activeJourney.endTime = new Date().toISOString();
