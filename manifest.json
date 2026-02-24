@@ -2,7 +2,7 @@
   "name": "Uber Moto Tracker",
   "short_name": "Moto Tracker",
   "description": "Tracking de jornadas Uber Moto",
-  "start_url": "/index.html",
+  "start_url": "/ubertracker/index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
