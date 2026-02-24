@@ -1059,6 +1059,58 @@
         </div>
     </div>
 
+    <!-- Tabla Screen -->
+    <div id="tablaScreen" class="screen">
+        <div class="container" style="padding-bottom: 5rem;">
+            <h1 style="text-align:center; font-size:1rem; color:var(--accent-orange); text-transform:uppercase; letter-spacing:2px; margin: 1rem 0 0.25rem;">🏍️ Tabla de Aceptación</h1>
+            <p style="text-align:center; font-size:0.75rem; color:var(--text-secondary); margin-bottom:1rem;">La Rioja · Costo real $52/km</p>
+
+            <div style="background:var(--bg-secondary); border-radius:12px; overflow:hidden; border:2px solid var(--accent-green);">
+                <div style="padding:0.65rem 1rem; background:rgba(74,222,128,0.1); border-bottom:2px solid var(--accent-green);">
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-green); text-transform:uppercase; letter-spacing:1px;">Tabla de Aceptación de Viajes</div>
+                    <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.2rem;">Calibrada para La Rioja · $150/km</div>
+                </div>
+                <table style="width:100%; border-collapse:collapse; font-family:'Courier New',monospace;">
+                    <thead>
+                        <tr style="background:var(--bg-tertiary);">
+                            <th style="padding:0.6rem 0.5rem; font-size:0.75rem; color:var(--accent-orange); text-align:center;">Búsq.</th>
+                            <th style="padding:0.6rem 0.5rem; font-size:0.75rem; color:#f87171; text-align:center;">Rechazar</th>
+                            <th style="padding:0.6rem 0.5rem; font-size:0.75rem; color:#fbbf24; text-align:center;">Zona Gris</th>
+                            <th style="padding:0.6rem 0.5rem; font-size:0.75rem; color:var(--accent-green); text-align:center;">Aceptar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody">
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">0.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$875</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1075</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1275</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">1.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$950</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1150</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1350</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">1.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1025</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1225</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1425</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">2.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1100</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1300</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1500</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">2.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1175</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1375</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1575</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">3.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1250</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1450</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1650</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">3.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1325</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1525</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1725</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">4.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1400</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1600</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1800</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">4.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1475</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1675</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1875</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">5.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1550</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1750</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$1950</td></tr>
+                        <tr style="border-bottom:1px solid var(--bg-tertiary)"><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">5.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1625</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1825</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$2025</td></tr>
+                        <tr><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-orange);font-weight:800;">6.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#f87171;">&lt;$1700</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#fbbf24;">~$1900</td><td style="padding:0.55rem 0.5rem;text-align:center;color:var(--accent-green);font-weight:700;">&gt;$2100</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Leyenda -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; margin-top:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.4rem;background:var(--bg-secondary);padding:0.5rem;border-radius:8px;justify-content:center;font-size:0.72rem;"><div style="width:9px;height:9px;border-radius:50%;background:#f87171;flex-shrink:0;"></div>Rechazar</div>
+                <div style="display:flex;align-items:center;gap:0.4rem;background:var(--bg-secondary);padding:0.5rem;border-radius:8px;justify-content:center;font-size:0.72rem;"><div style="width:9px;height:9px;border-radius:50%;background:#fbbf24;flex-shrink:0;"></div>Zona Gris</div>
+                <div style="display:flex;align-items:center;gap:0.4rem;background:var(--bg-secondary);padding:0.5rem;border-radius:8px;justify-content:center;font-size:0.72rem;"><div style="width:9px;height:9px;border-radius:50%;background:var(--accent-green);flex-shrink:0;"></div>Aceptar</div>
+            </div>
+
+            <!-- Regla anti-penalización -->
+            <div style="margin-top:0.75rem; background:var(--bg-secondary); border-radius:12px; padding:0.85rem 1rem; border-left:3px solid var(--accent-orange);">
+                <div style="font-size:0.75rem; color:var(--accent-orange); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:0.4rem;">⚠️ Regla anti-penalización</div>
+                <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">Nunca rechaces <strong style="color:var(--text-primary);">más de 2 viajes seguidos</strong>. Si ya rechazaste 2, aceptá el siguiente sin importar el valor.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <button class="nav-btn active" onclick="switchScreen('dashboard')">
@@ -1072,6 +1124,10 @@
         <button class="nav-btn" onclick="switchScreen('history')">
             <div class="nav-icon">📜</div>
             <div>Historial</div>
+        </button>
+        <button class="nav-btn" onclick="switchScreen('tabla')">
+            <div class="nav-icon">📋</div>
+            <div>Viajes</div>
         </button>
     </div>
 
@@ -1157,6 +1213,9 @@
                 document.getElementById('historyScreen').classList.add('active');
                 document.querySelectorAll('.nav-btn')[2].classList.add('active');
                 updateHistory();
+            } else if (screen === 'tabla') {
+                document.getElementById('tablaScreen').classList.add('active');
+                document.querySelectorAll('.nav-btn')[3].classList.add('active');
             }
         }
 
