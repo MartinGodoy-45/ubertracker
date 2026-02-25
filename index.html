@@ -1697,7 +1697,9 @@
             }
             
             saveData();
+            closeModal('confirmEndModal');
             closeModal('endJourneyModal');
+            previewData = null;
             checkActiveJourney();
             switchScreen('dashboard');
             updateDashboard();
