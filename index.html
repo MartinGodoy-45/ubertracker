@@ -663,6 +663,43 @@
     <!-- Dashboard Screen -->
     <div id="dashboardScreen" class="screen active">
         <div class="container">
+
+            <!-- 1. MANTENIMIENTO -->
+            <div class="card" style="border: 1px solid var(--border); cursor:pointer;" onclick="switchScreen('mantenimiento')">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div class="card-title" style="margin-bottom:0.25rem;">🔧 Mantenimiento</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);" id="nextMaintenancePreview">Cargando alertas...</div>
+                    </div>
+                    <div style="font-size:1.5rem; color:var(--text-secondary);">›</div>
+                </div>
+            </div>
+
+            <!-- 2. MDA -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(249, 115, 22, 0.1)); border: 2px solid var(--accent-orange);">
+                <div class="card-title">🎯 Meta Diaria Ajustada</div>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">NECESITAS RECAUDAR POR DÍA</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: var(--accent-orange);" id="dailyGoalDynamic">$0</div>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                        <span>Para cubrir cuota:</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;" id="neededForQuota">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                        <span>Gastos operativos estimados:</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;" id="estimatedOperativeExpenses">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem;">
+                        <span>Días restantes del mes:</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-orange);" id="daysRemaining">0</span>
+                    </div>
+                </div>
+                <div id="goalStatus" style="margin-top: 1rem; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; text-align: center; font-weight: 600;"></div>
+            </div>
+
+            <!-- 3. RECAUDACIÓN DEL MES -->
             <div class="card progress-card">
                 <div class="card-title">💰 Recaudación del Mes</div>
                 <div class="progress-text">
@@ -692,29 +729,30 @@
                 </div>
             </div>
 
-            <div class="card" style="background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(249, 115, 22, 0.1)); border: 2px solid var(--accent-orange);">
-                <div class="card-title">🎯 Meta Diaria Ajustada</div>
-                <div style="text-align: center; margin: 1rem 0;">
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">NECESITAS RECAUDAR POR DÍA</div>
-                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: var(--accent-orange);" id="dailyGoalDynamic">$0</div>
-                </div>
-                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
-                        <span>Para cubrir cuota:</span>
-                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;" id="neededForQuota">$0</span>
+            <!-- 4. FRASCOS -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(251,146,60,0.05), rgba(74,222,128,0.05)); border: 1px solid var(--border);">
+                <div class="card-title">🫙 Frascos del Mes</div>
+                <div style="margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                        <div style="font-size:0.8rem; font-weight:700; color:var(--accent-orange);">🏦 Frasco Cuota</div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary);" id="frascoCuotaPct">0%</div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
-                        <span>Gastos operativos estimados:</span>
-                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;" id="estimatedOperativeExpenses">$0</span>
+                    <div style="background:var(--bg-tertiary); border-radius:8px; height:10px; overflow:hidden; margin-bottom:0.4rem;">
+                        <div id="frascoCuotaBar" style="height:100%; background:linear-gradient(90deg, var(--accent-orange), var(--accent-green)); border-radius:8px; transition:width 0.5s ease; width:0%;"></div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.85rem;">
-                        <span>Días restantes del mes:</span>
-                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-orange);" id="daysRemaining">0</span>
+                    <div style="display:flex; justify-content:space-between;">
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700; color:var(--accent-orange);" id="frascoCuotaAmount">$0</div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary); align-self:center;" id="frascoCuotaFalta">Meta: $475,648</div>
                     </div>
                 </div>
-                <div id="goalStatus" style="margin-top: 1rem; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; text-align: center; font-weight: 600;"></div>
+                <div style="padding-top:0.75rem; border-top:1px solid var(--border);">
+                    <div style="font-size:0.8rem; font-weight:700; color:var(--accent-green); margin-bottom:0.4rem;">💰 Frasco Ahorro <span style="font-size:0.65rem; color:var(--text-secondary); font-weight:400;">(lo que supera $30k/día)</span></div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; color:var(--accent-green);" id="frascoAhorroAmount">$0</div>
+                    <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.2rem;" id="frascoAhorroJornadas">—</div>
+                </div>
             </div>
 
+            <!-- 5. STATS -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-card-label">Jornadas Mes</div>
@@ -747,6 +785,7 @@
                 </div>
             </div>
 
+            <!-- 6. JORNADA -->
             <div class="card" id="activeJourneyCard" style="display: none;">
                 <div class="card-title">🔥 Jornada Activa</div>
                 <button class="btn btn-primary" onclick="goToJourney()">Ver Jornada Actual</button>
@@ -756,6 +795,7 @@
                 <div class="card-title">Iniciar Nueva Jornada</div>
                 <button class="btn btn-success" onclick="showStartJourneyModal()">Comenzar Jornada</button>
             </div>
+
         </div>
     </div>
 
@@ -1111,6 +1151,66 @@
         </div>
     </div>
 
+    <!-- Mantenimiento Screen -->
+    <div id="mantenimientoScreen" class="screen">
+        <div class="container" style="padding-bottom: 5rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem; margin: 1rem 0 1.25rem;">
+                <button onclick="switchScreen('dashboard')" style="background:none;border:none;color:var(--text-secondary);font-size:1.3rem;cursor:pointer;">‹</button>
+                <h1 style="font-size:1rem; color:var(--accent-orange); text-transform:uppercase; letter-spacing:2px; margin:0;">🔧 Mantenimiento</h1>
+            </div>
+
+            <!-- KM actual -->
+            <div class="card" style="margin-bottom:1rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">KM Actual (último inicio de jornada)</div>
+                        <div style="font-size:1.4rem; font-weight:800; color:var(--accent-green); font-family:'JetBrains Mono',monospace;" id="currentKmDisplay">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de tareas -->
+            <div id="maintenanceList"></div>
+
+            <!-- Modal registro tarea -->
+            <div id="maintenanceModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="maintenanceModalTitle">Registrar Tarea</h3>
+                        <button class="close-btn" onclick="closeModal('maintenanceModal')">&times;</button>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">KM al realizar la tarea</label>
+                        <input type="number" class="input-field" id="maintenanceKmInput" placeholder="Ej: 5800">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Notas (opcional)</label>
+                        <input type="text" class="input-field" id="maintenanceNotesInput" placeholder="Ej: Cambié por aceite Motul 10W40">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeModal('maintenanceModal')">Cancelar</button>
+                        <button class="btn btn-success" onclick="saveMaintenanceTask()">Registrar ✅</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal actualizar KM -->
+            <div id="updateKmModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">KM Actual del Odómetro</h3>
+                        <button class="close-btn" onclick="closeModal('updateKmModal')">&times;</button>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">KM actual</label>
+                        <input type="number" class="input-field" id="currentKmInput" placeholder="Ej: 5314">
+                    </div>
+                    <button class="btn btn-success" onclick="saveCurrentKm()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <button class="nav-btn active" onclick="switchScreen('dashboard')">
@@ -1142,8 +1242,10 @@
         // Inicializar la aplicación
         function init() {
             loadData();
+            loadMaintenanceData();
             updateDashboard();
             updateHistory();
+            updateMaintenancePreview();
             checkActiveJourney();
             
             // Registrar Service Worker para PWA
@@ -1216,6 +1318,9 @@
             } else if (screen === 'tabla') {
                 document.getElementById('tablaScreen').classList.add('active');
                 document.querySelectorAll('.nav-btn')[3].classList.add('active');
+            } else if (screen === 'mantenimiento') {
+                document.getElementById('mantenimientoScreen').classList.add('active');
+                renderMaintenanceList();
             }
         }
 
@@ -1226,6 +1331,13 @@
 
         // Mostrar modal de inicio de jornada
         function showStartJourneyModal() {
+            // Pre-completar KM con el endKm de la última jornada
+            if (journeys.length > 0) {
+                const lastJourney = journeys[journeys.length - 1];
+                if (lastJourney.endKm) {
+                    document.getElementById('startKm').value = lastJourney.endKm;
+                }
+            }
             document.getElementById('startJourneyModal').classList.add('active');
         }
 
@@ -1530,7 +1642,180 @@
             document.getElementById('endJourneyModal').classList.add('active');
         }
 
-        // Guardar preview data para usar en endJourney
+        // ===== MANTENIMIENTO =====
+        const MAINTENANCE_TASKS = [
+            { id: 'aceite',     name: 'Cambio de aceite + filtro',         interval: 3000,  canDoIt: false, urgent: false, notes: 'Próximo: ~5,800 km' },
+            { id: 'cadena',     name: 'Limpiar y lubricar cadena',          interval: 500,   canDoIt: true,  urgent: false, notes: 'Cada ~4 días de trabajo' },
+            { id: 'tension',    name: 'Tensión de cadena',                  interval: 500,   canDoIt: true,  urgent: false, notes: 'Holgura ideal: 20-30mm' },
+            { id: 'frenos',     name: 'Inspección pastillas/zapatas freno', interval: 4000,  canDoIt: false, urgent: false, notes: 'Reemplazo en concesionario' },
+            { id: 'frenabs',    name: 'Cable freno ABS (sujeción)',         interval: 0,     canDoIt: false, urgent: true,  notes: '⚠️ URGENTE — llevar al concesionario' },
+            { id: 'filtroaire', name: 'Limpieza filtro de aire',            interval: 4000,  canDoIt: true,  urgent: false, notes: 'Más seguido en zonas polvorientas' },
+            { id: 'neumaticos', name: 'Presión y estado neumáticos',        interval: 500,   canDoIt: true,  urgent: false, notes: 'Verificar semanalmente' },
+            { id: 'bateria',    name: 'Inspección batería',                 interval: 8000,  canDoIt: true,  urgent: false, notes: 'Visual — buscar corrosión' },
+            { id: 'caballete',  name: 'Limpieza y lubricación caballete',   interval: 4000,  canDoIt: true,  urgent: false, notes: '' },
+            { id: 'valvulas',   name: 'Regulación de válvulas',             interval: 8000,  canDoIt: false, urgent: false, notes: '0.08mm admisión / 0.12mm escape' },
+            { id: 'embrague',   name: 'Ajuste cable de embrague',           interval: 0,     canDoIt: true,  urgent: false, notes: 'Si nota dureza o juego excesivo' },
+            { id: 'calor',      name: 'Consultar recalentamiento motor',    interval: 0,     canDoIt: false, urgent: true,  notes: '⚠️ Consultar en service del 06/03' },
+            { id: 'liqufrenos', name: 'Cambio líquido de frenos',           interval: 0,     canDoIt: false, urgent: false, notes: 'Cada 2 años — DOT 3 o DOT 4' },
+        ];
+
+        let maintenanceData = {};
+        let currentOdometerKm = 0;
+        let currentMaintenanceTaskId = null;
+
+        function loadMaintenanceData() {
+            const saved = localStorage.getItem('maintenanceData');
+            if (saved) maintenanceData = JSON.parse(saved);
+            const savedKm = localStorage.getItem('currentOdometerKm');
+            if (savedKm) currentOdometerKm = parseInt(savedKm);
+        }
+
+        function saveMaintenanceData() {
+            localStorage.setItem('maintenanceData', JSON.stringify(maintenanceData));
+            localStorage.setItem('currentOdometerKm', currentOdometerKm);
+        }
+
+        function updateCurrentKm() {
+            document.getElementById('currentKmInput').value = currentOdometerKm || '';
+            document.getElementById('updateKmModal').classList.add('active');
+        }
+
+        function saveCurrentKm() {
+            const km = parseInt(document.getElementById('currentKmInput').value);
+            if (km > 0) {
+                currentOdometerKm = km;
+                saveMaintenanceData();
+                closeModal('updateKmModal');
+                renderMaintenanceList();
+                updateMaintenancePreview();
+            }
+        }
+
+        function getLatestOdometerKm() {
+            // Toma el KM de inicio de la última jornada registrada
+            if (journeys.length > 0) {
+                const last = journeys[journeys.length - 1];
+                return last.endKm || last.startKm || 0;
+            }
+            return currentOdometerKm || 0;
+        }
+
+        function renderMaintenanceList() {
+            const kmActual = getLatestOdometerKm();
+            document.getElementById('currentKmDisplay').textContent = kmActual ? `${kmActual.toLocaleString()} km` : '— Sin jornadas registradas';
+
+            const container = document.getElementById('maintenanceList');
+            let html = '';
+
+            MAINTENANCE_TASKS.forEach(task => {
+                const record = maintenanceData[task.id];
+                const lastKm = record ? record.km : null;
+                const lastDate = record ? record.date : null;
+
+                let statusColor = 'var(--accent-green)';
+                let statusText = 'Al día ✅';
+                let statusBg = 'rgba(74, 222, 128, 0.08)';
+                let kmLeft = null;
+
+                if (task.urgent) {
+                    statusColor = 'var(--accent-red)';
+                    statusText = '⚠️ URGENTE';
+                    statusBg = 'rgba(248, 113, 113, 0.12)';
+                } else if (task.interval === 0) {
+                    statusColor = 'var(--accent-blue)';
+                    statusText = 'Según necesidad';
+                    statusBg = 'rgba(96, 165, 250, 0.08)';
+                } else if (lastKm && kmActual) {
+                    kmLeft = task.interval - (kmActual - lastKm);
+                    if (kmLeft <= 0) {
+                        statusColor = 'var(--accent-red)';
+                        statusText = `Vencido (${Math.abs(kmLeft).toLocaleString()} km pasados) ❌`;
+                        statusBg = 'rgba(248, 113, 113, 0.12)';
+                    } else if (kmLeft <= task.interval * 0.2) {
+                        statusColor = 'var(--accent-orange)';
+                        statusText = `Pronto: ${kmLeft.toLocaleString()} km ⚠️`;
+                        statusBg = 'rgba(251, 146, 60, 0.1)';
+                    } else {
+                        statusText = `Faltan ${kmLeft.toLocaleString()} km ✅`;
+                    }
+                } else if (!lastKm) {
+                    statusColor = 'var(--text-secondary)';
+                    statusText = 'Sin registro';
+                    statusBg = 'var(--bg-tertiary)';
+                }
+
+                const canBadge = task.canDoIt
+                    ? `<span style="font-size:0.6rem;background:rgba(74,222,128,0.15);color:var(--accent-green);padding:0.15rem 0.4rem;border-radius:4px;font-weight:700;">Vos podés</span>`
+                    : `<span style="font-size:0.6rem;background:rgba(96,165,250,0.15);color:var(--accent-blue);padding:0.15rem 0.4rem;border-radius:4px;font-weight:700;">Concesionario</span>`;
+
+                const lastInfo = lastKm
+                    ? `Última vez: ${lastKm.toLocaleString()} km${lastDate ? ' · ' + lastDate : ''}`
+                    : 'Sin registro previo';
+
+                html += `
+                <div style="background:${statusBg};border-radius:12px;padding:0.85rem 1rem;margin-bottom:0.65rem;border-left:4px solid ${statusColor};">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.35rem;">
+                        <div style="font-size:0.88rem;font-weight:700;color:var(--text-primary);flex:1;padding-right:0.5rem;">${task.name}</div>
+                        ${canBadge}
+                    </div>
+                    <div style="font-size:0.78rem;font-weight:700;color:${statusColor};margin-bottom:0.25rem;">${statusText}</div>
+                    <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:0.25rem;">${lastInfo}</div>
+                    ${task.notes ? `<div style="font-size:0.7rem;color:var(--text-secondary);font-style:italic;">${task.notes}</div>` : ''}
+                    ${task.interval > 0 || task.urgent ? `<button onclick="openMaintenanceModal('${task.id}')" style="margin-top:0.5rem;background:none;border:1px solid var(--border);color:var(--text-secondary);padding:0.3rem 0.6rem;border-radius:6px;font-size:0.72rem;cursor:pointer;">✏️ Registrar tarea</button>` : ''}
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function openMaintenanceModal(taskId) {
+            currentMaintenanceTaskId = taskId;
+            const task = MAINTENANCE_TASKS.find(t => t.id === taskId);
+            document.getElementById('maintenanceModalTitle').textContent = task.name;
+            document.getElementById('maintenanceKmInput').value = getLatestOdometerKm() || '';
+            document.getElementById('maintenanceNotesInput').value = '';
+            document.getElementById('maintenanceModal').classList.add('active');
+        }
+
+        function saveMaintenanceTask() {
+            const km = parseInt(document.getElementById('maintenanceKmInput').value);
+            const notes = document.getElementById('maintenanceNotesInput').value;
+            if (!km) return;
+
+            const now = new Date();
+            const date = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
+
+            maintenanceData[currentMaintenanceTaskId] = { km, date, notes };
+            saveMaintenanceData();
+            closeModal('maintenanceModal');
+            renderMaintenanceList();
+            updateMaintenancePreview();
+        }
+
+        function updateMaintenancePreview() {
+            const preview = document.getElementById('nextMaintenancePreview');
+            if (!preview) return;
+
+            const urgent = MAINTENANCE_TASKS.filter(t => t.urgent);
+            const overdue = MAINTENANCE_TASKS.filter(t => {
+                if (t.interval === 0 || t.urgent) return false;
+                const record = maintenanceData[t.id];
+                if (!record || !currentOdometerKm) return false;
+                return (currentOdometerKm - record.km) >= t.interval;
+            });
+
+            if (urgent.length > 0) {
+                preview.style.color = 'var(--accent-red)';
+                preview.textContent = `⚠️ ${urgent.length} tarea(s) urgente(s) pendiente(s)`;
+            } else if (overdue.length > 0) {
+                preview.style.color = 'var(--accent-orange)';
+                preview.textContent = `⚠️ ${overdue.length} tarea(s) vencida(s)`;
+            } else {
+                preview.style.color = 'var(--accent-green)';
+                preview.textContent = '✅ Todo al día';
+            }
+        }
+        // ===== FIN MANTENIMIENTO =====
         let previewData = null;
 
         // Preview antes de finalizar
@@ -1741,28 +2026,24 @@
             document.getElementById('realAvailable').textContent = formatCurrency(disponibleReal);
             document.getElementById('totalPersonal').textContent = formatCurrency(monthTotalPersonal);
             
-            // CÁLCULO DINÁMICO DE META DIARIA
+            // CÁLCULO MDA — con fecha de inicio configurable
+            const workStartDay = 7; // Marzo arranca el día 7
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = now.getDate();
-            const daysRemaining = daysInMonth - today;
+            const totalWorkDays = daysInMonth - workStartDay + 1; // 25 días (07 al 31)
+            const daysRemaining = Math.max(0, daysInMonth - today);
             
-            // Calcular promedios de gastos operativos
             const avgFuelPerDay = journeyCount > 0 ? monthTotalFuel / journeyCount : 5000;
             const avgMotoPerDay = journeyCount > 0 ? monthTotalMoto / journeyCount : 2000;
-            
-            // Gastos operativos estimados para los días restantes
             const estimatedRemainingExpenses = (avgFuelPerDay + avgMotoPerDay) * daysRemaining;
             
-            // Lo que aún falta recaudar para cubrir todo
             const totalNeeded = cuotaMoto + monthTotalFuel + monthTotalMoto + estimatedRemainingExpenses;
             const stillNeeded = totalNeeded - monthTotalBruto;
             
-            // Meta diaria ajustada
-            let dailyGoalDynamic = 40000; // Base
+            let dailyGoalDynamic = 40000;
             if (daysRemaining > 0 && stillNeeded > 0) {
                 dailyGoalDynamic = Math.ceil(stillNeeded / daysRemaining);
             } else if (daysRemaining > 0) {
-                // Ya cumpliste el objetivo, mantener promedio actual
                 dailyGoalDynamic = Math.ceil(dailyAvgBruto);
             }
             
@@ -1801,7 +2082,7 @@
             document.getElementById('dailyAvgNeto').textContent = formatCurrency(dailyAvgNeto);
             
             // Proyecciones
-            const projectionBruto = dailyAvgBruto * daysInMonth;
+            const projectionBruto = dailyAvgBruto * totalWorkDays;
             const projectionFuel = monthTotalFuel + (avgFuelPerDay * daysRemaining);
             const projectionMoto = monthTotalMoto + (avgMotoPerDay * daysRemaining);
             const projectionNeto = projectionBruto - cuotaMoto - projectionFuel - projectionMoto;
@@ -1811,6 +2092,31 @@
             
             const totalKm = journeys.reduce((sum, j) => sum + (j.kmTraveled || 0), 0);
             document.getElementById('totalKm').textContent = totalKm.toFixed(0);
+
+            // ===== FRASCOS =====
+            const metaBase = 30000; // Por día
+            let frascosCuota = 0;
+            let frascosAhorro = 0;
+
+            monthJourneys.forEach(j => {
+                const bruta = j.earnings?.bruta || 0;
+                if (bruta >= metaBase) {
+                    frascosCuota += metaBase;
+                    frascosAhorro += (bruta - metaBase);
+                } else {
+                    frascosCuota += bruta;
+                }
+            });
+
+            const cuotaPct = Math.min(100, Math.round((frascosCuota / cuotaMoto) * 100));
+            const cuotaFalta = Math.max(0, cuotaMoto - frascosCuota);
+
+            document.getElementById('frascoCuotaAmount').textContent = formatCurrency(frascosCuota);
+            document.getElementById('frascoCuotaPct').textContent = cuotaPct + '%';
+            document.getElementById('frascoCuotaFalta').textContent = cuotaFalta > 0 ? `Faltan ${formatCurrency(cuotaFalta)}` : '✅ Completo';
+            document.getElementById('frascoCuotaBar').style.width = cuotaPct + '%';
+            document.getElementById('frascoAhorroAmount').textContent = formatCurrency(frascosAhorro);
+            document.getElementById('frascoAhorroJornadas').textContent = `${monthJourneys.filter(j => (j.earnings?.bruta || 0) > metaBase).length} jornadas superaron $${(metaBase/1000).toFixed(0)}k`;
         }
 
         // Actualizar historial
