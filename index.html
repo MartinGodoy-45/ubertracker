@@ -1172,6 +1172,35 @@
             <!-- Lista de tareas -->
             <div id="maintenanceList"></div>
 
+            <!-- Pendientes libres -->
+            <div class="card" style="margin-top:0.75rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <div class="card-title" style="margin:0;">📝 Pendientes</div>
+                    <button onclick="showAddPendingModal()" style="background:none;border:1px solid var(--accent-orange);color:var(--accent-orange);padding:0.3rem 0.7rem;border-radius:6px;font-size:0.8rem;cursor:pointer;font-weight:700;">+ Agregar</button>
+                </div>
+                <div id="pendingList">
+                    <div style="font-size:0.8rem;color:var(--text-secondary);text-align:center;padding:0.5rem;">Sin pendientes 👍</div>
+                </div>
+            </div>
+
+            <!-- Modal agregar pendiente -->
+            <div id="addPendingModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Nuevo Pendiente</h3>
+                        <button class="close-btn" onclick="closeModal('addPendingModal')">&times;</button>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Descripción</label>
+                        <input type="text" class="input-field" id="pendingDescInput" placeholder="Ej: Ajustar guiñe delantero izquierdo">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeModal('addPendingModal')">Cancelar</button>
+                        <button class="btn btn-success" onclick="savePending()">Agregar ✅</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Modal registro tarea -->
             <div id="maintenanceModal" class="modal">
                 <div class="modal-content">
@@ -1243,6 +1272,7 @@
         function init() {
             loadData();
             loadMaintenanceData();
+            loadPendingTasks();
             updateDashboard();
             updateHistory();
             updateMaintenancePreview();
@@ -1321,6 +1351,7 @@
             } else if (screen === 'mantenimiento') {
                 document.getElementById('mantenimientoScreen').classList.add('active');
                 renderMaintenanceList();
+                renderPendingList();
             }
         }
 
@@ -1642,7 +1673,68 @@
             document.getElementById('endJourneyModal').classList.add('active');
         }
 
-        // ===== MANTENIMIENTO =====
+        // ===== PENDIENTES LIBRES =====
+        let pendingTasks = [];
+
+        function loadPendingTasks() {
+            const saved = localStorage.getItem('pendingTasks');
+            if (saved) pendingTasks = JSON.parse(saved);
+        }
+
+        function savePendingTasks() {
+            localStorage.setItem('pendingTasks', JSON.stringify(pendingTasks));
+        }
+
+        function showAddPendingModal() {
+            document.getElementById('pendingDescInput').value = '';
+            document.getElementById('addPendingModal').classList.add('active');
+        }
+
+        function savePending() {
+            const desc = document.getElementById('pendingDescInput').value.trim();
+            if (!desc) return;
+            const now = new Date();
+            const date = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}`;
+            pendingTasks.unshift({ id: Date.now(), desc, date, done: false });
+            savePendingTasks();
+            closeModal('addPendingModal');
+            renderPendingList();
+        }
+
+        function togglePending(id) {
+            const task = pendingTasks.find(t => t.id === id);
+            if (task) {
+                task.done = !task.done;
+                savePendingTasks();
+                renderPendingList();
+            }
+        }
+
+        function deletePending(id) {
+            pendingTasks = pendingTasks.filter(t => t.id !== id);
+            savePendingTasks();
+            renderPendingList();
+        }
+
+        function renderPendingList() {
+            const container = document.getElementById('pendingList');
+            if (!container) return;
+            if (pendingTasks.length === 0) {
+                container.innerHTML = '<div style="font-size:0.8rem;color:var(--text-secondary);text-align:center;padding:0.5rem;">Sin pendientes 👍</div>';
+                return;
+            }
+            container.innerHTML = pendingTasks.map(t => `
+                <div style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0;border-bottom:1px solid var(--border);">
+                    <div onclick="togglePending(${t.id})" style="width:20px;height:20px;border-radius:50%;border:2px solid ${t.done ? 'var(--accent-green)' : 'var(--border)'};background:${t.done ? 'var(--accent-green)' : 'none'};cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">${t.done ? '✓' : ''}</div>
+                    <div style="flex:1;">
+                        <div style="font-size:0.85rem;color:${t.done ? 'var(--text-secondary)' : 'var(--text-primary)'};text-decoration:${t.done ? 'line-through' : 'none'};">${t.desc}</div>
+                        <div style="font-size:0.7rem;color:var(--text-secondary);">${t.date}</div>
+                    </div>
+                    <button onclick="deletePending(${t.id})" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:1rem;padding:0.2rem;">🗑</button>
+                </div>
+            `).join('');
+        }
+        // ===== FIN PENDIENTES =====
         const MAINTENANCE_TASKS = [
             { id: 'aceite',     name: 'Cambio de aceite + filtro',         interval: 3000,  canDoIt: false, urgent: false, notes: 'Próximo: ~5,800 km' },
             { id: 'cadena',     name: 'Limpiar y lubricar cadena',          interval: 500,   canDoIt: true,  urgent: false, notes: 'Cada ~4 días de trabajo' },
@@ -1657,6 +1749,7 @@
             { id: 'embrague',   name: 'Ajuste cable de embrague',           interval: 0,     canDoIt: true,  urgent: false, notes: 'Si nota dureza o juego excesivo' },
             { id: 'calor',      name: 'Consultar recalentamiento motor',    interval: 0,     canDoIt: false, urgent: true,  notes: '⚠️ Consultar en service del 06/03' },
             { id: 'liqufrenos', name: 'Cambio líquido de frenos',           interval: 0,     canDoIt: false, urgent: false, notes: 'Cada 2 años — DOT 3 o DOT 4' },
+            { id: 'sujecion',   name: 'Tuercas, pernos y sujeción',         interval: 4000,  canDoIt: true,  urgent: false, notes: 'Verificar guiñes, espejos, carenado' },
         ];
 
         let maintenanceData = {};
