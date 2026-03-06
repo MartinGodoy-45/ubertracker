@@ -96,7 +96,7 @@
 <div class="header">
     <div class="header-content">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div class="logo">🏍️ UBER MOTO TRACKER</div>
+            <div class="logo" style="font-size:clamp(1rem,4.5vw,1.5rem);white-space:nowrap;">🏍️ UBER MOTO TRACKER</div>
             <div id="dbStatus" style="font-size:0.7rem;font-weight:700;color:var(--text-secondary);padding:0.3rem 0.6rem;background:var(--bg-tertiary);border-radius:8px;border:1px solid var(--border);">💾 Local</div>
         </div>
         <div class="header-stats">
@@ -132,10 +132,13 @@
         </div>
 
         <div class="card progress-card">
-            <div class="card-title">💰 Recaudación del Mes</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <div class="card-title" style="margin:0;">💰 Recaudación del Mes</div>
+                <button onclick="showConfigModal()" style="background:none;border:1px solid var(--accent-orange);color:var(--accent-orange);padding:0.3rem 0.7rem;border-radius:6px;font-size:0.8rem;cursor:pointer;font-weight:700;">⚙️ Config</button>
+            </div>
             <div class="progress-text"><span>Recaudado (Bruto): <strong id="progressAmount">$0</strong></span></div>
             <div style="margin-top:1rem;padding:1rem;background:var(--bg-tertiary);border-radius:8px;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;"><span>Cuota Moto:</span><span style="color:var(--accent-red);font-weight:700;">-$475.648</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;"><span>Cuota Moto:</span><span style="color:var(--accent-red);font-weight:700;" id="cuotaDisplay">-$0</span></div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;"><span>Combustible:</span><span style="color:var(--accent-orange);font-weight:700;" id="totalFuel">-$0</span></div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;"><span>Gastos Moto:</span><span style="color:var(--accent-blue);font-weight:700;" id="totalMoto">-$0</span></div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;"><span>Gastos Fijos:</span><span style="color:var(--accent-purple);font-weight:700;" id="totalFixedDash">$0</span></div>
@@ -162,17 +165,30 @@
             </div>
         </div>
 
-        <div class="card" style="background:linear-gradient(135deg,rgba(251,146,60,0.05),rgba(74,222,128,0.05));">
-            <div class="card-title">🫙 Frascos del Mes</div>
-            <div style="margin-bottom:1rem;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;"><div style="font-size:0.8rem;font-weight:700;color:var(--accent-orange);">🏦 Frasco Cuota</div><div style="font-size:0.75rem;color:var(--text-secondary);" id="frascoCuotaPct">0%</div></div>
-                <div style="background:var(--bg-tertiary);border-radius:8px;height:10px;overflow:hidden;margin-bottom:0.4rem;"><div id="frascoCuotaBar" style="height:100%;background:linear-gradient(90deg,var(--accent-orange),var(--accent-green));border-radius:8px;transition:width 0.5s ease;width:0%;"></div></div>
-                <div style="display:flex;justify-content:space-between;"><div style="font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent-orange);" id="frascoCuotaAmount">$0</div><div style="font-size:0.75rem;color:var(--text-secondary);align-self:center;" id="frascoCuotaFalta">Meta: $475.648</div></div>
+        <div class="card" style="background:linear-gradient(135deg,rgba(251,146,60,0.12),rgba(74,222,128,0.12));border:2px solid transparent;background-clip:padding-box;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;border-radius:15px;padding:2px;background:linear-gradient(135deg,var(--accent-orange),var(--accent-green));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
+            <div class="card-title" style="background:linear-gradient(90deg,var(--accent-orange),var(--accent-green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🫙 Frascos del Mes</div>
+
+            <!-- Frasco Cuota -->
+            <div style="margin-bottom:1rem;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);border-radius:12px;padding:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <div style="font-size:0.85rem;font-weight:700;color:var(--accent-orange);">🏦 Frasco Cuota</div>
+                    <div style="font-size:0.8rem;font-weight:700;color:var(--accent-orange);font-family:'JetBrains Mono',monospace;" id="frascoCuotaPct">0%</div>
+                </div>
+                <div style="background:var(--bg-primary);border-radius:8px;height:12px;overflow:hidden;margin-bottom:0.6rem;border:1px solid rgba(251,146,60,0.2);">
+                    <div id="frascoCuotaBar" style="height:100%;background:linear-gradient(90deg,var(--accent-orange),var(--accent-green));border-radius:8px;transition:width 0.5s ease;width:0%;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--accent-orange);" id="frascoCuotaAmount">$0</div>
+                    <div style="font-size:0.75rem;color:var(--accent-orange);opacity:0.7;font-weight:600;" id="frascoCuotaFalta">Meta: $475.648</div>
+                </div>
             </div>
-            <div style="padding-top:0.75rem;border-top:1px solid var(--border);">
-                <div style="font-size:0.8rem;font-weight:700;color:var(--accent-green);margin-bottom:0.4rem;">💰 Frasco Ahorro <span style="font-size:0.65rem;color:var(--text-secondary);font-weight:400;">(lo que supera $30k/día)</span></div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent-green);" id="frascoAhorroAmount">$0</div>
-                <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:0.2rem;" id="frascoAhorroJornadas">—</div>
+
+            <!-- Frasco Ahorro -->
+            <div style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);border-radius:12px;padding:1rem;">
+                <div style="font-size:0.85rem;font-weight:700;color:var(--accent-green);margin-bottom:0.5rem;">💰 Frasco Ahorro <span style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;">(supera $30k/día)</span></div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--accent-green);" id="frascoAhorroAmount">$0</div>
+                <div style="font-size:0.72rem;color:var(--accent-green);opacity:0.7;margin-top:0.3rem;" id="frascoAhorroJornadas">—</div>
             </div>
         </div>
 
@@ -410,6 +426,35 @@
         </div>
         <div id="addPendingModal" class="modal"><div class="modal-content"><div class="modal-header"><h3 class="modal-title">Nuevo Pendiente</h3><button class="close-btn" onclick="closeModal('addPendingModal')">&times;</button></div><div class="input-group"><label class="input-label">Descripción</label><input type="text" class="input-field" id="pendingDescInput" placeholder="Ej: Ajustar guiñe delantero izquierdo"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('addPendingModal')">Cancelar</button><button class="btn btn-success" onclick="savePending()">Agregar ✅</button></div></div></div>
         <div id="maintenanceModal" class="modal"><div class="modal-content"><div class="modal-header"><h3 class="modal-title" id="maintenanceModalTitle">Registrar Tarea</h3><button class="close-btn" onclick="closeModal('maintenanceModal')">&times;</button></div><div class="input-group"><label class="input-label">KM al realizar la tarea</label><input type="number" class="input-field" id="maintenanceKmInput" placeholder="Ej: 5800"></div><div class="input-group"><label class="input-label">Notas (opcional)</label><input type="text" class="input-field" id="maintenanceNotesInput" placeholder="Ej: Aceite Motul 10W40"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('maintenanceModal')">Cancelar</button><button class="btn btn-success" onclick="saveMaintenanceTask()">Registrar ✅</button></div></div></div>
+    </div>
+</div>
+
+<!-- MODAL CONFIGURACIÓN -->
+<div id="configModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3 class="modal-title">⚙️ Configuración</h3><button class="close-btn" onclick="closeModal('configModal')">&times;</button></div>
+        <div class="input-group">
+            <label class="input-label">Cuota Mensual Moto</label>
+            <input type="number" class="input-field" id="configCuota" placeholder="475648">
+            <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.4rem;">Valor actual: <span id="configCuotaActual" style="color:var(--accent-orange);font-weight:700;">$0</span></div>
+        </div>
+        <div class="input-group">
+            <label class="input-label">Combustible estimado por día (fallback)</label>
+            <input type="number" class="input-field" id="configFuel" placeholder="5000">
+            <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.4rem;">Se usa si no hay datos del mes anterior</div>
+        </div>
+        <div class="input-group">
+            <label class="input-label">Gasto Moto estimado por día (fallback)</label>
+            <input type="number" class="input-field" id="configMoto" placeholder="2000">
+            <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.4rem;">Se usa si no hay datos del mes anterior</div>
+        </div>
+        <div style="background:rgba(96,165,250,0.1);border:1px solid var(--accent-blue);border-radius:8px;padding:0.75rem;margin-bottom:1rem;font-size:0.8rem;color:var(--text-secondary);">
+            💡 Cuando el mes actual tiene menos de 5 jornadas, se usa automáticamente el promedio del mes anterior.
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('configModal')">Cancelar</button>
+            <button class="btn btn-success" onclick="saveConfig()">Guardar ✅</button>
+        </div>
     </div>
 </div>
 
@@ -700,8 +745,8 @@ let activeJourney=null, journeys=[], pendingTasks=[], maintenanceData={}, curren
 
 async function init() {
     await initDB();
-    [journeys, activeJourney, maintenanceData, currentOdometerKm, pendingTasks, fixedExpenses] = await Promise.all([
-        dbLoadJourneys(), dbLoadActiveJourney(), dbLoadMaintenance(), dbLoadOdometer(), dbLoadPending(), dbLoadFixedExpenses()
+    [journeys, activeJourney, maintenanceData, currentOdometerKm, pendingTasks, fixedExpenses, appConfig] = await Promise.all([
+        dbLoadJourneys(), dbLoadActiveJourney(), dbLoadMaintenance(), dbLoadOdometer(), dbLoadPending(), dbLoadFixedExpenses(), dbLoadConfig()
     ]);
     if (activeJourney) startTimer();
     updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses();
@@ -861,34 +906,56 @@ async function endJourney(){
 function updateDashboard(){
     const now=new Date(),cm=now.getMonth(),cy=now.getFullYear();
     const mj=journeys.filter(j=>{const d=new Date(j.startTime);return d.getMonth()===cm&&d.getFullYear()===cy;});
-    const bruto=mj.reduce((s,j)=>s+(j.earnings?.bruta||0),0),fuel=mj.reduce((s,j)=>s+(j.earnings?.fuel||0),0),mo=mj.reduce((s,j)=>s+(j.earnings?.moto||0),0),pers=mj.reduce((s,j)=>s+(j.earnings?.personal||0),0),cuota=475648,cnt=mj.length;
+    const bruto=mj.reduce((s,j)=>s+(j.earnings?.bruta||0),0),fuel=mj.reduce((s,j)=>s+(j.earnings?.fuel||0),0),mo=mj.reduce((s,j)=>s+(j.earnings?.moto||0),0),pers=mj.reduce((s,j)=>s+(j.earnings?.personal||0),0);
+    const cuota=appConfig.cuota||475648,cnt=mj.length;
     const avgB=cnt>0?bruto/cnt:0,avgN=cnt>0?mj.reduce((s,j)=>s+(j.earnings?.neta||0),0)/cnt:0;
     const totalFijos=fixedExpenses.filter(f=>f.active).reduce((s,f)=>s+f.amount,0);
+
+    // Promedio operativo: usa mes anterior si el actual tiene menos de 5 jornadas
+    const pm=cm===0?11:cm-1,py=cm===0?cy-1:cy;
+    const pj=journeys.filter(j=>{const d=new Date(j.startTime);return d.getMonth()===pm&&d.getFullYear()===py;});
+    let afd,amd,fuentePromedio;
+    if(cnt>=5){
+        afd=fuel/cnt; amd=mo/cnt; fuentePromedio='mes actual';
+    } else if(pj.length>0){
+        const pf=pj.reduce((s,j)=>s+(j.earnings?.fuel||0),0);
+        const pm2=pj.reduce((s,j)=>s+(j.earnings?.moto||0),0);
+        afd=pf/pj.length; amd=pm2/pj.length; fuentePromedio='mes anterior';
+    } else {
+        afd=appConfig.fuelFallback||5000; amd=appConfig.motoFallback||2000; fuentePromedio='estimado';
+    }
+
     document.getElementById('monthTotal').textContent=fc(bruto);
     document.getElementById('dailyAvg').textContent=fc(avgB);
     document.getElementById('progressAmount').textContent=fc(bruto);
+    document.getElementById('cuotaDisplay').textContent='-'+fc(cuota);
     document.getElementById('totalFuel').textContent='-'+fc(fuel);
     document.getElementById('totalMoto').textContent='-'+fc(mo);
     document.getElementById('totalPersonal').textContent=fc(pers);
     document.getElementById('realAvailable').textContent=fc(bruto-cuota-fuel-mo-totalFijos);
     const tfd=document.getElementById('totalFixedDash');if(tfd)tfd.textContent=totalFijos>0?'-'+fc(totalFijos):'$0';
-    const dim=new Date(cy,cm+1,0).getDate(),dr=Math.max(0,dim-now.getDate()),twd=dim-7+1,afd=cnt>0?fuel/cnt:5000,amd=cnt>0?mo/cnt:2000,er=(afd+amd)*dr,sn=cuota+fuel+mo+totalFijos+er-bruto;
+
+    const dim=new Date(cy,cm+1,0).getDate(),dr=Math.max(0,dim-now.getDate()),twd=dim-7+1;
+    const er=(afd+amd)*dr,sn=cuota+fuel+mo+totalFijos+er-bruto;
     let dg=40000;if(dr>0&&sn>0)dg=Math.ceil(sn/dr);else if(dr>0)dg=Math.ceil(avgB);
     document.getElementById('dailyGoalDynamic').textContent=fc(dg);
     document.getElementById('neededForQuota').textContent=fc(Math.max(0,cuota+fuel+mo+totalFijos-bruto));
     document.getElementById('estimatedOperativeExpenses').textContent=fc(er);
     document.getElementById('daysRemaining').textContent=dr;
+
     const gs=document.getElementById('goalStatus');
     if(sn<=0){gs.textContent='🎉 ¡Ya cubriste la cuota!';gs.style.cssText='background:rgba(74,222,128,0.2);border:1px solid var(--accent-green);color:var(--accent-green);padding:0.75rem;border-radius:8px;font-size:0.85rem;text-align:center;font-weight:600;';}
     else if(dg>avgB*1.5){gs.textContent='⚠️ Necesitas aumentar el ritmo';gs.style.cssText='background:rgba(248,113,113,0.2);border:1px solid var(--accent-red);color:var(--accent-red);padding:0.75rem;border-radius:8px;font-size:0.85rem;text-align:center;font-weight:600;';}
     else if(dg>avgB){gs.textContent='📈 Vas bien, mantén el esfuerzo';gs.style.cssText='background:rgba(251,146,60,0.2);border:1px solid var(--accent-orange);color:var(--accent-orange);padding:0.75rem;border-radius:8px;font-size:0.85rem;text-align:center;font-weight:600;';}
     else{gs.textContent='✅ ¡Vas por buen camino!';gs.style.cssText='background:rgba(74,222,128,0.2);border:1px solid var(--accent-green);color:var(--accent-green);padding:0.75rem;border-radius:8px;font-size:0.85rem;text-align:center;font-weight:600;';}
+
     document.getElementById('journeyCount').textContent=cnt;
     document.getElementById('dailyAvgBruto').textContent=fc(avgB);
     document.getElementById('dailyAvgNeto').textContent=fc(avgN);
     document.getElementById('projectionBruto').textContent=fc(avgB*twd);
     document.getElementById('projectionNeto').textContent=fc(avgB*twd-cuota-(fuel+afd*dr)-(mo+amd*dr)-totalFijos);
     document.getElementById('totalKm').textContent=journeys.reduce((s,j)=>s+(j.kmTraveled||0),0).toFixed(0);
+
     const mb=30000;let fc2=0,fa=0;
     mj.forEach(j=>{const b=j.earnings?.bruta||0;if(b>=mb){fc2+=mb;fa+=(b-mb);}else fc2+=b;});
     const cp=Math.min(100,Math.round((fc2/cuota)*100)),cf=Math.max(0,cuota-fc2);
@@ -990,6 +1057,47 @@ function importData(event){const file=event.target.files[0];if(!file)return;cons
 function closeModal(id){document.getElementById(id).classList.remove('active');}
 function fc(n){return'$'+(n||0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active');}));
+
+// ── CONFIGURACIÓN ────────────────────────────
+let appConfig = { cuota: 475648, fuelFallback: 5000, motoFallback: 2000 };
+
+async function dbLoadConfig() {
+    if (dbOk) {
+        try {
+            const {data} = await db.from('app_data').select('value').eq('key','app_config').maybeSingle();
+            if (data) { const v=JSON.parse(data.value); localStorage.setItem('appConfig',JSON.stringify(v)); return v; }
+        } catch(e) { console.warn(e.message); }
+    }
+    const s = localStorage.getItem('appConfig'); return s ? JSON.parse(s) : { cuota: 475648, fuelFallback: 5000, motoFallback: 2000 };
+}
+
+async function dbSaveConfig() {
+    localStorage.setItem('appConfig', JSON.stringify(appConfig));
+    if (!dbOk) return;
+    try {
+        const {data:ex} = await db.from('app_data').select('id').eq('key','app_config').maybeSingle();
+        if (ex) await db.from('app_data').update({value:JSON.stringify(appConfig)}).eq('key','app_config');
+        else await db.from('app_data').insert({key:'app_config',value:JSON.stringify(appConfig)});
+    } catch(e) { console.warn(e.message); }
+}
+
+function showConfigModal() {
+    document.getElementById('configCuota').value = appConfig.cuota;
+    document.getElementById('configFuel').value = appConfig.fuelFallback;
+    document.getElementById('configMoto').value = appConfig.motoFallback;
+    document.getElementById('configCuotaActual').textContent = fc(appConfig.cuota);
+    document.getElementById('configModal').classList.add('active');
+}
+
+async function saveConfig() {
+    const c=parseFloat(document.getElementById('configCuota').value)||475648;
+    const f=parseFloat(document.getElementById('configFuel').value)||5000;
+    const m=parseFloat(document.getElementById('configMoto').value)||2000;
+    appConfig = { cuota:c, fuelFallback:f, motoFallback:m };
+    await dbSaveConfig();
+    closeModal('configModal');
+    updateDashboard();
+}
 
 init();
 </script>
