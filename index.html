@@ -70,6 +70,7 @@
         .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg-secondary);border-top:2px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);padding:0.5rem;z-index:99;}
         .nav-btn{background:none;border:none;color:var(--text-secondary);padding:0.5rem 0.25rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0.2rem;font-size:0.65rem;font-weight:600;transition:all 0.2s;border-radius:8px;}
         .nav-btn.active{color:var(--accent-orange);background:rgba(251,146,60,0.1);}
+        .nav-btn.disabled{opacity:0.35;cursor:not-allowed;pointer-events:none;}
         .nav-icon{font-size:1.3rem;}
         .expense-item{background:var(--bg-tertiary);padding:0.75rem;border-radius:8px;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;font-size:0.9rem;}
         .expense-concept{color:var(--text-secondary);font-size:0.8rem;margin-top:0.25rem;}
@@ -749,7 +750,7 @@ async function init() {
         dbLoadJourneys(), dbLoadActiveJourney(), dbLoadMaintenance(), dbLoadOdometer(), dbLoadPending(), dbLoadFixedExpenses(), dbLoadConfig()
     ]);
     if (activeJourney) startTimer();
-    updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses();
+    updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses(); updateJourneyNavBtn();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 
@@ -764,6 +765,12 @@ function checkActiveJourney() {
         document.getElementById('noActiveJourneyCard').style.display='block';
         document.getElementById('journeyNavBtn').classList.remove('active');
     }
+}
+
+function updateJourneyNavBtn(){
+    const btn=document.getElementById('journeyNavBtn');
+    if(activeJourney){btn.classList.remove('disabled');}
+    else{btn.classList.add('disabled');}
 }
 
 function switchScreen(s) {
@@ -784,7 +791,7 @@ function showStartJourneyModal() {
 async function startJourney() {
     const j = {id:Date.now(),startTime:new Date().toISOString(),startKm:parseFloat(document.getElementById('startKm').value)||0,startWallets:{nx:parseFloat(document.getElementById('startNX').value)||0,mp:parseFloat(document.getElementById('startMP').value)||0,cash:parseFloat(document.getElementById('startCash').value)||0,uber:parseFloat(document.getElementById('startUber').value)||0},expenses:[],incomes:[],uberCounter:0};
     activeJourney = await dbStartJourney(j);
-    closeModal('startJourneyModal'); checkActiveJourney(); switchScreen('journey'); startTimer();
+    closeModal('startJourneyModal'); checkActiveJourney(); switchScreen('journey'); startTimer(); updateJourneyNavBtn();
 }
 
 function startTimer() {
@@ -900,7 +907,7 @@ async function endJourney(){
     await dbEndJourney(activeJourney);
     journeys.push(activeJourney);activeJourney=null;previewData=null;
     if(journeyTimer){clearInterval(journeyTimer);journeyTimer=null;}
-    closeModal('confirmEndModal');closeModal('endJourneyModal');checkActiveJourney();switchScreen('dashboard');updateDashboard();updateHistory();
+    closeModal('confirmEndModal');closeModal('endJourneyModal');checkActiveJourney();switchScreen('dashboard');updateDashboard();updateHistory();updateJourneyNavBtn();
 }
 
 function updateDashboard(){
