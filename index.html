@@ -998,7 +998,14 @@ const MT=[
     {id:'sujecion',name:'Tuercas, pernos y sujeción',interval:4000,canDoIt:true,urgent:false,notes:'Verificar guiñes, espejos, carenado'},
 ];
 
-function getLatestKm(){if(journeys.length>0){const l=journeys[journeys.length-1];return l.endKm||l.startKm||0;}return currentOdometerKm||0;}
+function getLatestKm(){
+    if(journeys.length>0){
+        const sorted=[...journeys].sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+        const l=sorted[0];
+        return l.endKm||l.startKm||0;
+    }
+    return currentOdometerKm||0;
+}
 
 function renderMaintenanceList(){
     const km=getLatestKm();
