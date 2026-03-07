@@ -1007,12 +1007,15 @@ function renderMaintenanceList(){
     MT.forEach(task=>{
         const r=maintenanceData[task.id],lk=r?r.km:null,ld=r?r.date:null;
         let sc='var(--accent-green)',st='Al día ✅',sb='rgba(74,222,128,0.08)';
-        if(task.urgent){sc='var(--accent-red)';st='⚠️ URGENTE';sb='rgba(248,113,113,0.12)';}
+        if(task.urgent){
+            if(r){sc='var(--accent-green)';st=`✅ Atendido el ${ld||''}`;sb='rgba(74,222,128,0.08)';}
+            else{sc='var(--accent-red)';st='⚠️ URGENTE';sb='rgba(248,113,113,0.12)';}
+        }
         else if(task.interval===0){sc='var(--accent-blue)';st='Según necesidad';sb='rgba(96,165,250,0.08)';}
         else if(lk&&km){const kl=task.interval-(km-lk);if(kl<=0){sc='var(--accent-red)';st=`Vencido (${Math.abs(kl).toLocaleString()} km) ❌`;sb='rgba(248,113,113,0.12)';}else if(kl<=task.interval*0.2){sc='var(--accent-orange)';st=`Pronto: ${kl.toLocaleString()} km ⚠️`;sb='rgba(251,146,60,0.1)';}else{st=`Faltan ${kl.toLocaleString()} km ✅`;}}
         else if(!lk){sc='var(--text-secondary)';st='Sin registro';sb='var(--bg-tertiary)';}
         const cb=task.canDoIt?`<span style="font-size:0.6rem;background:rgba(74,222,128,0.15);color:var(--accent-green);padding:0.15rem 0.4rem;border-radius:4px;font-weight:700;">Vos podés</span>`:`<span style="font-size:0.6rem;background:rgba(96,165,250,0.15);color:var(--accent-blue);padding:0.15rem 0.4rem;border-radius:4px;font-weight:700;">Concesionario</span>`;
-        html+=`<div style="background:${sb};border-radius:12px;padding:0.85rem 1rem;margin-bottom:0.65rem;border-left:4px solid ${sc};"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.35rem;"><div style="font-size:0.88rem;font-weight:700;color:var(--text-primary);flex:1;padding-right:0.5rem;">${task.name}</div>${cb}</div><div style="font-size:0.78rem;font-weight:700;color:${sc};margin-bottom:0.25rem;">${st}</div><div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:0.25rem;">${lk?`Última vez: ${lk.toLocaleString()} km${ld?' · '+ld:''}`:'Sin registro previo'}</div>${task.notes?`<div style="font-size:0.7rem;color:var(--text-secondary);font-style:italic;">${task.notes}</div>`:''}${task.interval>0||task.urgent?`<button onclick="openMaintenanceModal('${task.id}')" style="margin-top:0.5rem;background:none;border:1px solid var(--border);color:var(--text-secondary);padding:0.3rem 0.6rem;border-radius:6px;font-size:0.72rem;cursor:pointer;">✏️ Registrar tarea</button>`:''}</div>`;
+        html+=`<div style="background:${sb};border-radius:12px;padding:0.85rem 1rem;margin-bottom:0.65rem;border-left:4px solid ${sc};"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.35rem;"><div style="font-size:0.88rem;font-weight:700;color:var(--text-primary);flex:1;padding-right:0.5rem;">${task.name}</div>${cb}</div><div style="font-size:0.78rem;font-weight:700;color:${sc};margin-bottom:0.25rem;">${st}</div><div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:0.25rem;">${lk?`Última vez: ${lk.toLocaleString()} km${ld?' · '+ld:''}`:'Sin registro previo'}</div>${task.notes?`<div style="font-size:0.7rem;color:var(--text-secondary);font-style:italic;">${task.notes}</div>`:''}<button onclick="openMaintenanceModal('${task.id}')" style="margin-top:0.5rem;background:none;border:1px solid var(--border);color:var(--text-secondary);padding:0.3rem 0.6rem;border-radius:6px;font-size:0.72rem;cursor:pointer;">✏️ Registrar tarea</button></div>`;
     });
     document.getElementById('maintenanceList').innerHTML=html;
 }
@@ -1029,7 +1032,10 @@ async function saveMaintenanceTask(){
 
 function updateMaintenancePreview(){
     const p=document.getElementById('nextMaintenancePreview');if(!p)return;
-    const u=MT.filter(t=>t.urgent),o=MT.filter(t=>{if(t.interval===0||t.urgent)return false;const r=maintenanceData[t.id];if(!r||!currentOdometerKm)return false;return(currentOdometerKm-r.km)>=t.interval;});
+    const km=getLatestKm();
+    // Urgentes: solo las que NO tienen registro previo
+    const u=MT.filter(t=>t.urgent && !maintenanceData[t.id]);
+    const o=MT.filter(t=>{if(t.interval===0||t.urgent)return false;const r=maintenanceData[t.id];if(!r||!km)return false;return(km-r.km)>=t.interval;});
     if(u.length){p.style.color='var(--accent-red)';p.textContent=`⚠️ ${u.length} tarea(s) urgente(s)`;}
     else if(o.length){p.style.color='var(--accent-orange)';p.textContent=`⚠️ ${o.length} tarea(s) vencida(s)`;}
     else{p.style.color='var(--accent-green)';p.textContent='✅ Todo al día';}
