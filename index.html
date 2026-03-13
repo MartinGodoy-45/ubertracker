@@ -293,9 +293,9 @@
         <div class="input-group">
             <label class="input-label">Distribución de Pago</label>
             <div class="wallet-inputs">
-                <div class="wallet-input"><div class="wallet-name">💵 Efectivo</div><input type="number" class="input-field" id="expCash" placeholder="$0" value="0" oninput="updatePaymentDist('cash')"></div>
-                <div class="wallet-input"><div class="wallet-name">💳 Transferencia (NX)</div><input type="number" class="input-field" id="expTransfer" placeholder="$0" value="0" oninput="updatePaymentDist('transfer')"></div>
-                <div class="wallet-input"><div class="wallet-name">🟦 Mercado Pago</div><input type="number" class="input-field" id="expMP" placeholder="$0" value="0" oninput="updatePaymentDist('mp')"></div>
+                <div class="wallet-input"><div class="wallet-name" id="expCashLabel">💵 Efectivo</div><input type="number" class="input-field" id="expCash" placeholder="$0" value="0" oninput="updatePaymentDist('cash')"></div>
+                <div class="wallet-input"><div class="wallet-name" id="expTransferLabel">💳 Transferencia (NX)</div><input type="number" class="input-field" id="expTransfer" placeholder="$0" value="0" oninput="updatePaymentDist('transfer')"></div>
+                <div class="wallet-input"><div class="wallet-name" id="expMPLabel">🟦 Mercado Pago</div><input type="number" class="input-field" id="expMP" placeholder="$0" value="0" oninput="updatePaymentDist('mp')"></div>
             </div>
             <div id="paymentWarning" style="display:none;margin-top:0.5rem;padding:0.75rem;background:rgba(248,113,113,0.1);border:1px solid var(--accent-red);border-radius:8px;font-size:0.85rem;color:var(--accent-red);"></div>
         </div>
@@ -308,10 +308,10 @@
         <div class="modal-header"><h3 class="modal-title">Registrar Ingreso</h3><button class="close-btn" onclick="closeModal('incomeModal')">&times;</button></div>
         <div style="background:rgba(96,165,250,0.1);padding:0.75rem;border-radius:8px;margin-bottom:1rem;font-size:0.85rem;color:var(--text-secondary);">💡 Ingresá cuánto <strong>subió</strong> cada billetera. El placeholder muestra tu saldo estimado actual.</div>
         <div class="wallet-inputs">
-            <div class="wallet-input"><div class="wallet-name">Incremento Naranja NX</div><input type="number" class="input-field" id="incomeNX" placeholder="$0" value="0"></div>
-            <div class="wallet-input"><div class="wallet-name">Incremento Mercado Pago</div><input type="number" class="input-field" id="incomeMP" placeholder="$0" value="0"></div>
-            <div class="wallet-input"><div class="wallet-name">Incremento Efectivo</div><input type="number" class="input-field" id="incomeCash" placeholder="$0" value="0"></div>
-            <div class="wallet-input"><div class="wallet-name">Incremento Uber Wallet</div><input type="number" class="input-field" id="incomeUber" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div class="wallet-name" id="incomeNXLabel">Naranja NX</div><input type="number" class="input-field" id="incomeNX" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div class="wallet-name" id="incomeMPLabel">Mercado Pago</div><input type="number" class="input-field" id="incomeMP" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div class="wallet-name" id="incomeCashLabel">Efectivo</div><input type="number" class="input-field" id="incomeCash" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div class="wallet-name" id="incomeUberLabel">Uber Wallet</div><input type="number" class="input-field" id="incomeUber" placeholder="$0" value="0"></div>
         </div>
         <button class="btn btn-success" onclick="addIncome()">Registrar</button>
     </div>
@@ -467,7 +467,7 @@
     <button class="nav-btn" onclick="switchScreen('tabla')"><div class="nav-icon">📋</div><div>Viajes</div></button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 <script>
 // ═══════════════════════════════════════════════
 // SUPABASE
@@ -830,9 +830,9 @@ function showExpenseModal(t){
         const incNX=activeJourney.incomes.reduce(function(s,i){return s+(i.nx||0);},0);
         const incMP=activeJourney.incomes.reduce(function(s,i){return s+(i.mp||0);},0);
         const incCash=activeJourney.incomes.reduce(function(s,i){return s+(i.cash||0);},0);
-        document.getElementById('expTransfer').placeholder='NX: '+fc((sw.nx||0)+incNX-expNX);
-        document.getElementById('expMP').placeholder='MP: '+fc((sw.mp||0)+incMP-expMP);
-        document.getElementById('expCash').placeholder='Ef: '+fc((sw.cash||0)+incCash-expCash);
+        document.getElementById('expCashLabel').textContent='💵 Efectivo ('+fc((sw.cash||0)+incCash-expCash)+')';
+        document.getElementById('expTransferLabel').textContent='💳 Transferencia NX ('+fc((sw.nx||0)+incNX-expNX)+')';
+        document.getElementById('expMPLabel').textContent='🟦 Mercado Pago ('+fc((sw.mp||0)+incMP-expMP)+')';
     }
     document.getElementById('expenseModal').classList.add('active');
 }
@@ -873,10 +873,10 @@ function showIncomeModal(){
         const incMP=activeJourney.incomes.reduce(function(s,i){return s+(i.mp||0);},0);
         const incCash=activeJourney.incomes.reduce(function(s,i){return s+(i.cash||0);},0);
         const incUber=activeJourney.incomes.reduce(function(s,i){return s+(i.uber||0);},0);
-        document.getElementById('incomeNX').placeholder='Saldo NX: '+fc((sw.nx||0)+incNX-expNX);
-        document.getElementById('incomeMP').placeholder='Saldo MP: '+fc((sw.mp||0)+incMP-expMP);
-        document.getElementById('incomeCash').placeholder='Saldo Ef: '+fc((sw.cash||0)+incCash-expCash);
-        document.getElementById('incomeUber').placeholder='Saldo UW: '+fc((sw.uber||0)+incUber);
+        document.getElementById('incomeNXLabel').textContent='Naranja NX (saldo: '+fc((sw.nx||0)+incNX-expNX)+')';
+        document.getElementById('incomeMPLabel').textContent='Mercado Pago (saldo: '+fc((sw.mp||0)+incMP-expMP)+')';
+        document.getElementById('incomeCashLabel').textContent='Efectivo (saldo: '+fc((sw.cash||0)+incCash-expCash)+')';
+        document.getElementById('incomeUberLabel').textContent='Uber Wallet (saldo: '+fc((sw.uber||0)+incUber)+')';
     }
     document.getElementById('incomeModal').classList.add('active');
 }
