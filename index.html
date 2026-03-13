@@ -306,7 +306,7 @@
 <div id="incomeModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3 class="modal-title">Registrar Ingreso</h3><button class="close-btn" onclick="closeModal('incomeModal')">&times;</button></div>
-        <div style="background:rgba(96,165,250,0.1);padding:0.75rem;border-radius:8px;margin-bottom:1rem;font-size:0.85rem;color:var(--text-secondary);">💡 Registrá cuando recibas pagos o transfieras de Uber Wallet a NX</div>
+        <div style="background:rgba(96,165,250,0.1);padding:0.75rem;border-radius:8px;margin-bottom:1rem;font-size:0.85rem;color:var(--text-secondary);">💡 Ingresá <strong>cuánto subió</strong> cada billetera. Ej: si NX pasó de $10.000 a $15.000, poné $5.000. El placeholder muestra tu saldo estimado actual.</div>
         <div class="wallet-inputs">
             <div class="wallet-input"><div class="wallet-name">Incremento Naranja NX</div><input type="number" class="input-field" id="incomeNX" placeholder="$0" value="0"></div>
             <div class="wallet-input"><div class="wallet-name">Incremento Mercado Pago</div><input type="number" class="input-field" id="incomeMP" placeholder="$0" value="0"></div>
@@ -784,7 +784,16 @@ function switchScreen(s) {
 }
 
 function showStartJourneyModal() {
-    if(journeys.length>0&&journeys[journeys.length-1].endKm) document.getElementById('startKm').value=journeys[journeys.length-1].endKm;
+    if(journeys.length > 0) {
+        const last = journeys[journeys.length - 1];
+        if(last.endKm) document.getElementById('startKm').value = last.endKm;
+        if(last.endWallets) {
+            if(last.endWallets.nx)   document.getElementById('startNX').value   = last.endWallets.nx;
+            if(last.endWallets.mp)   document.getElementById('startMP').value   = last.endWallets.mp;
+            if(last.endWallets.cash) document.getElementById('startCash').value = last.endWallets.cash;
+            if(last.endWallets.uber) document.getElementById('startUber').value = last.endWallets.uber;
+        }
+    }
     document.getElementById('startJourneyModal').classList.add('active');
 }
 
@@ -813,6 +822,20 @@ function showExpenseModal(t){
     ['expCash','expTransfer','expMP'].forEach(id=>document.getElementById(id).value='0');
     document.getElementById('paymentWarning').style.display='none';
     document.getElementById('conceptGroup').style.display=t==='fuel'?'none':'block';
+    // Mostrar saldos actuales como placeholder
+    if(activeJourney && activeJourney.startWallets) {
+        const sw = activeJourney.startWallets;
+        // Calcular saldo actual sumando ingresos y restando gastos pagados
+        const totalExpNX   = activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0);
+        const totalExpMP   = activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0);
+        const totalExpCash = activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
+        const curNX   = (sw.nx||0)   - totalExpNX;
+        const curMP   = (sw.mp||0)   - totalExpMP;
+        const curCash = (sw.cash||0) - totalExpCash;
+        document.getElementById('expTransfer').placeholder = `Saldo NX: ${fc(curNX)}`;
+        document.getElementById('expMP').placeholder       = `Saldo MP: ${fc(curMP)}`;
+        document.getElementById('expCash').placeholder     = `Saldo Ef: ${fc(curCash)}`;
+    }
     document.getElementById('expenseModal').classList.add('active');
 }
 
@@ -841,7 +864,29 @@ async function addExpense() {
     updateJourneyDisplay(); closeModal('expenseModal');
 }
 
-function showIncomeModal(){['incomeNX','incomeMP','incomeCash','incomeUber'].forEach(id=>document.getElementById(id).value=0);document.getElementById('incomeModal').classList.add('active');}
+function showIncomeModal(){
+    ['incomeNX','incomeMP','incomeCash','incomeUber'].forEach(id=>document.getElementById(id).value=0);
+    // Mostrar saldos actuales como referencia
+    if(activeJourney && activeJourney.startWallets) {
+        const sw = activeJourney.startWallets;
+        const totalExpNX   = activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0);
+        const totalExpMP   = activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0);
+        const totalExpCash = activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
+        const totalIncNX   = activeJourney.incomes.reduce((s,i)=>s+(i.nx||0),0);
+        const totalIncMP   = activeJourney.incomes.reduce((s,i)=>s+(i.mp||0),0);
+        const totalIncCash = activeJourney.incomes.reduce((s,i)=>s+(i.cash||0),0);
+        const totalIncUber = activeJourney.incomes.reduce((s,i)=>s+(i.uber||0),0);
+        const curNX   = (sw.nx||0)   + totalIncNX   - totalExpNX;
+        const curMP   = (sw.mp||0)   + totalIncMP   - totalExpMP;
+        const curCash = (sw.cash||0) + totalIncCash - totalExpCash;
+        const curUber = (sw.uber||0) + totalIncUber;
+        document.getElementById('incomeNX').placeholder   = `Saldo actual NX: ${fc(curNX)}`;
+        document.getElementById('incomeMP').placeholder   = `Saldo actual MP: ${fc(curMP)}`;
+        document.getElementById('incomeCash').placeholder = `Saldo actual Ef: ${fc(curCash)}`;
+        document.getElementById('incomeUber').placeholder = `Saldo actual UW: ${fc(curUber)}`;
+    }
+    document.getElementById('incomeModal').classList.add('active');
+}
 
 async function addIncome() {
     const nx=parseFloat(document.getElementById('incomeNX').value)||0,mp=parseFloat(document.getElementById('incomeMP').value)||0,c=parseFloat(document.getElementById('incomeCash').value)||0,u=parseFloat(document.getElementById('incomeUber').value)||0;
