@@ -111,6 +111,27 @@
 <div id="dashboardScreen" class="screen active">
     <div class="container">
 
+        <div class="card" id="weatherCard" style="background:linear-gradient(135deg,rgba(96,165,250,0.1),rgba(59,130,246,0.05));border:1px solid rgba(96,165,250,0.3);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">
+                        <span id="weatherIcon" style="font-size:1.8rem;">🌤️</span>
+                        <div>
+                            <div style="font-size:1.6rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text-primary);" id="weatherTemp">--°</div>
+                            <div style="font-size:0.72rem;color:var(--text-secondary);" id="weatherDesc">Cargando clima...</div>
+                        </div>
+                    </div>
+                    <div id="weatherAlerts" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.3rem;"></div>
+                </div>
+                <div style="text-align:right;min-width:80px;">
+                    <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:0.25rem;">HOY</div>
+                    <div style="font-size:0.8rem;font-weight:700;" id="weatherMaxMin">--° / --°</div>
+                    <div style="font-size:0.72rem;color:var(--accent-blue);margin-top:0.25rem;" id="weatherRain">🌧️ --%</div>
+                    <div style="font-size:0.65rem;color:var(--text-secondary);margin-top:0.5rem;cursor:pointer;" onclick="loadWeather()">↻ Actualizar</div>
+                </div>
+            </div>
+        </div>
+
         <div class="card" style="cursor:pointer;" onclick="switchScreen('mantenimiento')">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <div><div class="card-title" style="margin-bottom:0.25rem;">🔧 Mantenimiento</div><div style="font-size:0.8rem;color:var(--text-secondary);" id="nextMaintenancePreview">Cargando...</div></div>
@@ -119,7 +140,7 @@
         </div>
 
         <div class="card" style="background:linear-gradient(135deg,rgba(251,146,60,0.1),rgba(249,115,22,0.1));border:2px solid var(--accent-orange);">
-            <div class="card-title">🎯 Meta Diaria Ajustada</div>
+            <div class="card-title" id="mdaLabel">🎯 Meta Diaria Ajustada</div>
             <div style="text-align:center;margin:1rem 0;">
                 <div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:0.5rem;">NECESITAS RECAUDAR POR DÍA</div>
                 <div style="font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;color:var(--accent-orange);" id="dailyGoalDynamic">$0</div>
@@ -293,9 +314,9 @@
         <div class="input-group">
             <label class="input-label">Distribución de Pago</label>
             <div class="wallet-inputs">
-                <div class="wallet-input"><div class="wallet-name">💵 Efectivo</div><input type="number" class="input-field" id="expCash" placeholder="$0" value="0" oninput="updatePaymentDist('cash')"></div>
-                <div class="wallet-input"><div class="wallet-name">💳 Transferencia (NX)</div><input type="number" class="input-field" id="expTransfer" placeholder="$0" value="0" oninput="updatePaymentDist('transfer')"></div>
-                <div class="wallet-input"><div class="wallet-name">🟦 Mercado Pago</div><input type="number" class="input-field" id="expMP" placeholder="$0" value="0" oninput="updatePaymentDist('mp')"></div>
+                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">💵 Efectivo</div><span id="expCashLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expCash" placeholder="$0" value="0" oninput="updatePaymentDist('cash')"></div>
+                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">💳 Transferencia (NX)</div><span id="expTransferLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expTransfer" placeholder="$0" value="0" oninput="updatePaymentDist('transfer')"></div>
+                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">🟦 Mercado Pago</div><span id="expMPLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expMP" placeholder="$0" value="0" oninput="updatePaymentDist('mp')"></div>
             </div>
             <div id="paymentWarning" style="display:none;margin-top:0.5rem;padding:0.75rem;background:rgba(248,113,113,0.1);border:1px solid var(--accent-red);border-radius:8px;font-size:0.85rem;color:var(--accent-red);"></div>
         </div>
@@ -306,12 +327,12 @@
 <div id="incomeModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3 class="modal-title">Registrar Ingreso</h3><button class="close-btn" onclick="closeModal('incomeModal')">&times;</button></div>
-        <div style="background:rgba(96,165,250,0.1);padding:0.75rem;border-radius:8px;margin-bottom:1rem;font-size:0.85rem;color:var(--text-secondary);">💡 Registrá cuando recibas pagos o transfieras de Uber Wallet a NX</div>
+        <div style="background:rgba(96,165,250,0.1);padding:0.75rem;border-radius:8px;margin-bottom:1rem;font-size:0.85rem;color:var(--text-secondary);">💡 Ingresá cuánto <strong>subió</strong> cada billetera. El placeholder muestra tu saldo estimado actual.</div>
         <div class="wallet-inputs">
-            <div class="wallet-input"><div class="wallet-name">Incremento Naranja NX</div><input type="number" class="input-field" id="incomeNX" placeholder="$0" value="0"></div>
-            <div class="wallet-input"><div class="wallet-name">Incremento Mercado Pago</div><input type="number" class="input-field" id="incomeMP" placeholder="$0" value="0"></div>
-            <div class="wallet-input"><div class="wallet-name">Incremento Efectivo</div><input type="number" class="input-field" id="incomeCash" placeholder="$0" value="0"></div>
-            <div class="wallet-input"><div class="wallet-name">Incremento Uber Wallet</div><input type="number" class="input-field" id="incomeUber" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">Naranja NX</div><span id="incomeNXLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="incomeNX" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">Mercado Pago</div><span id="incomeMPLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="incomeMP" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">Efectivo</div><span id="incomeCashLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="incomeCash" placeholder="$0" value="0"></div>
+            <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">Uber Wallet</div><span id="incomeUberLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="incomeUber" placeholder="$0" value="0"></div>
         </div>
         <button class="btn btn-success" onclick="addIncome()">Registrar</button>
     </div>
@@ -467,7 +488,7 @@
     <button class="nav-btn" onclick="switchScreen('tabla')"><div class="nav-icon">📋</div><div>Viajes</div></button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 <script>
 // ═══════════════════════════════════════════════
 // SUPABASE
@@ -744,6 +765,72 @@ function renderFixedExpenses() {
 // ═══════════════════════════════════════════════
 let activeJourney=null, journeys=[], pendingTasks=[], maintenanceData={}, currentOdometerKm=0, fixedExpenses=[], journeyTimer=null, currentExpenseType=null, currentMaintenanceTaskId=null, previewData=null;
 
+
+// ── CLIMA ─────────────────────────────────────
+async function loadWeather() {
+    const card = document.getElementById('weatherCard');
+    document.getElementById('weatherDesc').textContent = 'Cargando...';
+    document.getElementById('weatherAlerts').innerHTML = '';
+    try {
+        const pos = await new Promise(function(res, rej) {
+            navigator.geolocation.getCurrentPosition(res, rej, {timeout:8000});
+        });
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        const url = 'https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon
+            +'&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m'
+            +'&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode'
+            +'&timezone=America%2FArgentina%2FBuenos_Aires&forecast_days=1';
+        const resp = await fetch(url);
+        const data = await resp.json();
+        const cur = data.current;
+        const day = data.daily;
+        const temp = Math.round(cur.temperature_2m);
+        const feels = Math.round(cur.apparent_temperature);
+        const wind = Math.round(cur.windspeed_10m);
+        const wcode = cur.weathercode;
+        const tmax = Math.round(day.temperature_2m_max[0]);
+        const tmin = Math.round(day.temperature_2m_min[0]);
+        const rain = day.precipitation_probability_max[0];
+
+        // Weather icon and description
+        let icon, desc;
+        if(wcode===0){icon='☀️';desc='Despejado';}
+        else if(wcode<=2){icon='⛅';desc='Parcialmente nublado';}
+        else if(wcode===3){icon='☁️';desc='Nublado';}
+        else if(wcode<=49){icon='🌫️';desc='Niebla';}
+        else if(wcode<=59){icon='🌦️';desc='Llovizna';}
+        else if(wcode<=69){icon='🌧️';desc='Lluvia';}
+        else if(wcode<=79){icon='❄️';desc='Nieve';}
+        else if(wcode<=82){icon='🌧️';desc='Lluvia intensa';}
+        else if(wcode<=84){icon='🌨️';desc='Granizo';}
+        else{icon='⛈️';desc='Tormenta';}
+
+        document.getElementById('weatherIcon').textContent = icon;
+        document.getElementById('weatherTemp').textContent = temp+'°C';
+        document.getElementById('weatherDesc').textContent = desc+' · Sensación '+feels+'°C';
+        document.getElementById('weatherMaxMin').textContent = tmax+'° / '+tmin+'°';
+        document.getElementById('weatherRain').textContent = '🌧️ '+rain+'%';
+
+        // Alerts
+        const alerts = [];
+        if(wcode>=51) alerts.push({icon:'🧥🌧️', text:'Llevá el piloto', color:'rgba(96,165,250,0.2)', border:'var(--accent-blue)'});
+        else if(rain>=50) alerts.push({icon:'☂️', text:'Posible lluvia', color:'rgba(96,165,250,0.15)', border:'rgba(96,165,250,0.5)'});
+        if(feels<=10) alerts.push({icon:'🧥', text:'Llevá abrigo', color:'rgba(251,146,60,0.15)', border:'var(--accent-orange)'});
+        if(wind>=40) alerts.push({icon:'💨', text:'Viento fuerte', color:'rgba(248,113,113,0.15)', border:'var(--accent-red)'});
+        if(alerts.length===0) alerts.push({icon:'✅', text:'Buen día para salir', color:'rgba(74,222,128,0.15)', border:'var(--accent-green)'});
+
+        const alertsEl = document.getElementById('weatherAlerts');
+        alertsEl.innerHTML = alerts.map(function(a) {
+            return '<span style="font-size:0.72rem;padding:0.2rem 0.5rem;border-radius:6px;font-weight:700;background:'+a.color+';border:1px solid '+a.border+';color:var(--text-primary);">'+a.icon+' '+a.text+'</span>';
+        }).join('');
+
+    } catch(e) {
+        document.getElementById('weatherDesc').textContent = 'Sin acceso al clima';
+        document.getElementById('weatherAlerts').innerHTML = '<span style="font-size:0.72rem;color:var(--text-secondary);">Activá la ubicación para ver el clima</span>';
+    }
+}
+
 async function init() {
     await initDB();
     [journeys, activeJourney, maintenanceData, currentOdometerKm, pendingTasks, fixedExpenses, appConfig] = await Promise.all([
@@ -752,6 +839,7 @@ async function init() {
     if (activeJourney) startTimer();
     updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses(); updateJourneyNavBtn();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+    loadWeather();
 }
 
 function checkActiveJourney() {
@@ -776,7 +864,7 @@ function updateJourneyNavBtn(){
 function switchScreen(s) {
     document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
-    if(s==='dashboard'){document.getElementById('dashboardScreen').classList.add('active');document.querySelector('.nav-btn').classList.add('active');updateDashboard();}
+    if(s==='dashboard'){document.getElementById('dashboardScreen').classList.add('active');document.querySelector('.nav-btn').classList.add('active');updateDashboard();loadWeather();}
     else if(s==='journey'){if(activeJourney){document.getElementById('journeyScreen').classList.add('active');document.getElementById('journeyNavBtn').classList.add('active');updateJourneyDisplay();}else{alert('No hay jornada activa');switchScreen('dashboard');}}
     else if(s==='history'){document.getElementById('historyScreen').classList.add('active');document.querySelectorAll('.nav-btn')[2].classList.add('active');updateHistory();}
     else if(s==='tabla'){document.getElementById('tablaScreen').classList.add('active');document.querySelectorAll('.nav-btn')[3].classList.add('active');}
@@ -784,7 +872,16 @@ function switchScreen(s) {
 }
 
 function showStartJourneyModal() {
-    if(journeys.length>0&&journeys[journeys.length-1].endKm) document.getElementById('startKm').value=journeys[journeys.length-1].endKm;
+    if(journeys.length>0) {
+        const last=journeys[journeys.length-1];
+        if(last.endKm) document.getElementById('startKm').value=last.endKm;
+        if(last.endWallets) {
+            if(last.endWallets.nx)   document.getElementById('startNX').value=last.endWallets.nx;
+            if(last.endWallets.mp)   document.getElementById('startMP').value=last.endWallets.mp;
+            if(last.endWallets.cash) document.getElementById('startCash').value=last.endWallets.cash;
+            if(last.endWallets.uber) document.getElementById('startUber').value=last.endWallets.uber;
+        }
+    }
     document.getElementById('startJourneyModal').classList.add('active');
 }
 
@@ -813,6 +910,18 @@ function showExpenseModal(t){
     ['expCash','expTransfer','expMP'].forEach(id=>document.getElementById(id).value='0');
     document.getElementById('paymentWarning').style.display='none';
     document.getElementById('conceptGroup').style.display=t==='fuel'?'none':'block';
+    if(activeJourney&&activeJourney.startWallets){
+        const sw=activeJourney.startWallets;
+        const expNX=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentTransfer||0);},0);
+        const expMP=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentMP||0);},0);
+        const expCash=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentCash||0);},0);
+        const incNX=activeJourney.incomes.reduce(function(s,i){return s+(i.nx||0);},0);
+        const incMP=activeJourney.incomes.reduce(function(s,i){return s+(i.mp||0);},0);
+        const incCash=activeJourney.incomes.reduce(function(s,i){return s+(i.cash||0);},0);
+        document.getElementById('expCashLabel').textContent=fc((sw.cash||0)+incCash-expCash);
+        document.getElementById('expTransferLabel').textContent=fc((sw.nx||0)+incNX-expNX);
+        document.getElementById('expMPLabel').textContent=fc((sw.mp||0)+incMP-expMP);
+    }
     document.getElementById('expenseModal').classList.add('active');
 }
 
@@ -841,7 +950,24 @@ async function addExpense() {
     updateJourneyDisplay(); closeModal('expenseModal');
 }
 
-function showIncomeModal(){['incomeNX','incomeMP','incomeCash','incomeUber'].forEach(id=>document.getElementById(id).value=0);document.getElementById('incomeModal').classList.add('active');}
+function showIncomeModal(){
+    ['incomeNX','incomeMP','incomeCash','incomeUber'].forEach(function(id){document.getElementById(id).value=0;});
+    if(activeJourney&&activeJourney.startWallets){
+        const sw=activeJourney.startWallets;
+        const expNX=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentTransfer||0);},0);
+        const expMP=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentMP||0);},0);
+        const expCash=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentCash||0);},0);
+        const incNX=activeJourney.incomes.reduce(function(s,i){return s+(i.nx||0);},0);
+        const incMP=activeJourney.incomes.reduce(function(s,i){return s+(i.mp||0);},0);
+        const incCash=activeJourney.incomes.reduce(function(s,i){return s+(i.cash||0);},0);
+        const incUber=activeJourney.incomes.reduce(function(s,i){return s+(i.uber||0);},0);
+        document.getElementById('incomeNXLabel').textContent=fc((sw.nx||0)+incNX-expNX);
+        document.getElementById('incomeMPLabel').textContent=fc((sw.mp||0)+incMP-expMP);
+        document.getElementById('incomeCashLabel').textContent=fc((sw.cash||0)+incCash-expCash);
+        document.getElementById('incomeUberLabel').textContent=fc((sw.uber||0)+incUber);
+    }
+    document.getElementById('incomeModal').classList.add('active');
+}
 
 async function addIncome() {
     const nx=parseFloat(document.getElementById('incomeNX').value)||0,mp=parseFloat(document.getElementById('incomeMP').value)||0,c=parseFloat(document.getElementById('incomeCash').value)||0,u=parseFloat(document.getElementById('incomeUber').value)||0;
@@ -963,15 +1089,29 @@ function updateDashboard(){
     document.getElementById('projectionNeto').textContent=fc(avgB*twd-cuota-(fuel+afd*dr)-(mo+amd*dr)-totalFijos);
     document.getElementById('totalKm').textContent=journeys.reduce((s,j)=>s+(j.kmTraveled||0),0).toFixed(0);
 
-    const mb=30000;let fc2=0,fa=0;
-    mj.forEach(j=>{const b=j.earnings?.bruta||0;if(b>=mb){fc2+=mb;fa+=(b-mb);}else fc2+=b;});
+    // Frascos: todo va a cuota hasta cubrir la meta, el excedente va a ahorro
+    const totalMes=mj.reduce(function(s,j){return s+(j.earnings&&j.earnings.bruta||0);},0);
+    const fc2=Math.min(totalMes,cuota);
+    const fa=Math.max(0,totalMes-cuota);
     const cp=Math.min(100,Math.round((fc2/cuota)*100)),cf=Math.max(0,cuota-fc2);
     document.getElementById('frascoCuotaAmount').textContent=fc(fc2);
     document.getElementById('frascoCuotaPct').textContent=cp+'%';
-    document.getElementById('frascoCuotaFalta').textContent=cf>0?`Faltan ${fc(cf)}`:'✅ Completo';
+    document.getElementById('frascoCuotaFalta').textContent=cf>0?('Faltan '+fc(cf)):'✅ Completo';
     document.getElementById('frascoCuotaBar').style.width=cp+'%';
     document.getElementById('frascoAhorroAmount').textContent=fc(fa);
-    document.getElementById('frascoAhorroJornadas').textContent=`${mj.filter(j=>(j.earnings?.bruta||0)>mb).length} jornadas superaron $${(mb/1000).toFixed(0)}k`;
+    const avgAhorro=fa>0&&cnt>0?Math.round(fa/cnt):0;
+    document.getElementById('frascoAhorroJornadas').textContent=fa>0?('Promedio ahorro: '+fc(avgAhorro)+'/día'):'—';
+    // MDA: cuando cuota cubierta se transforma en Meta de Ahorro Diario
+    const mdaLabelEl=document.getElementById('mdaLabel');
+    const mdaGoalEl=document.getElementById('dailyGoalDynamic');
+    if(cf===0&&cnt>0){
+        if(mdaLabelEl)mdaLabelEl.textContent='💰 Meta de Ahorro Diario';
+        mdaGoalEl.style.color='var(--accent-green)';
+        mdaGoalEl.textContent=fc(avgAhorro);
+    } else {
+        if(mdaLabelEl)mdaLabelEl.textContent='🎯 Meta Diaria Ajustada';
+        mdaGoalEl.style.color='var(--accent-orange)';
+    }
 }
 
 function updateHistory(){
