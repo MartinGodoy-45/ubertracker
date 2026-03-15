@@ -310,13 +310,18 @@
     <div class="modal-content">
         <div class="modal-header"><h3 class="modal-title" id="expenseModalTitle">Agregar Gasto</h3><button class="close-btn" onclick="closeModal('expenseModal')">&times;</button></div>
         <div class="input-group"><label class="input-label">Monto Total</label><input type="number" class="input-field" id="expenseAmount" placeholder="$0" oninput="updatePaymentDist()"></div>
+        <div class="input-group" id="fuelPriceGroup" style="display:none;">
+            <label class="input-label">Precio por litro <span style="color:var(--text-secondary);font-weight:400;">(opcional)</span></label>
+            <input type="number" class="input-field" id="expFuelPrice" placeholder="2020" oninput="updateFuelLiters()">
+            <div id="fuelLitersInfo" style="display:none;font-size:0.8rem;margin-top:0.4rem;color:var(--text-secondary);">Cargaste <span style="font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;" id="fuelLitersVal"></span> litros</div>
+        </div>
         <div class="input-group" id="conceptGroup"><label class="input-label">Concepto</label><input type="text" class="input-field" id="expenseConcept" placeholder="Ej: Mecánico, comida, etc."></div>
         <div class="input-group">
             <label class="input-label">Distribución de Pago</label>
             <div class="wallet-inputs">
-                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">💵 Efectivo</div><span id="expCashLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expCash" placeholder="$0" value="0" oninput="updatePaymentDist('cash')"></div>
-                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">💳 Transferencia (NX)</div><span id="expTransferLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expTransfer" placeholder="$0" value="0" oninput="updatePaymentDist('transfer')"></div>
-                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">🟦 Mercado Pago</div><span id="expMPLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expMP" placeholder="$0" value="0" oninput="updatePaymentDist('mp')"></div>
+                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">💵 Efectivo</div><span id="expCashLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expCash" placeholder="$0" value="0" oninput="updatePaymentDist('cash')"><div id="expCashAfter" style="display:none;font-size:0.72rem;margin-top:0.3rem;color:var(--text-secondary);">Quedará en <span style="font-weight:700;color:var(--accent-orange);font-family:'JetBrains Mono',monospace;" id="expCashAfterVal"></span></div></div>
+                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">💳 Transferencia (NX)</div><span id="expTransferLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expTransfer" placeholder="$0" value="0" oninput="updatePaymentDist('transfer')"><div id="expTransferAfter" style="display:none;font-size:0.72rem;margin-top:0.3rem;color:var(--text-secondary);">Quedará en <span style="font-weight:700;color:var(--accent-orange);font-family:'JetBrains Mono',monospace;" id="expTransferAfterVal"></span></div></div>
+                <div class="wallet-input"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><div class="wallet-name" style="margin-bottom:0;">🟦 Mercado Pago</div><span id="expMPLabel" style="font-size:0.8rem;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;"></span></div><input type="number" class="input-field" id="expMP" placeholder="$0" value="0" oninput="updatePaymentDist('mp')"><div id="expMPAfter" style="display:none;font-size:0.72rem;margin-top:0.3rem;color:var(--text-secondary);">Quedará en <span style="font-weight:700;color:var(--accent-orange);font-family:'JetBrains Mono',monospace;" id="expMPAfterVal"></span></div></div>
             </div>
             <div id="paymentWarning" style="display:none;margin-top:0.5rem;padding:0.75rem;background:rgba(248,113,113,0.1);border:1px solid var(--accent-red);border-radius:8px;font-size:0.85rem;color:var(--accent-red);"></div>
         </div>
@@ -405,25 +410,13 @@
 <div id="tablaScreen" class="screen">
     <div class="container" style="padding-bottom:5rem;">
         <h1 style="text-align:center;font-size:1rem;color:var(--accent-orange);text-transform:uppercase;letter-spacing:2px;margin:1rem 0 0.25rem;">🏍️ Tabla de Aceptación</h1>
-        <p style="text-align:center;font-size:0.75rem;color:var(--text-secondary);margin-bottom:1rem;">La Rioja · Costo real $52/km</p>
+        <p style="text-align:center;font-size:0.75rem;color:var(--text-secondary);margin-bottom:0.5rem;" id="tablaSubtitle">La Rioja · Costo real $58/km</p>
+        <p style="text-align:center;font-size:0.7rem;color:var(--accent-orange);margin-bottom:1rem;" id="tablaPrecioInfo">⛽ Combustible: $2.020/L · 35km/L</p>
         <div style="background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1e293b;">
             <div style="padding:0.65rem 1rem;background:#1e293b;"><div style="font-size:0.85rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;">Tabla de Aceptación de Viajes</div><div style="font-size:0.65rem;color:#94a3b8;margin-top:0.2rem;">Calibrada para La Rioja · $150/km</div></div>
             <table style="width:100%;border-collapse:collapse;font-family:'Courier New',monospace;">
                 <thead><tr style="background:#f1f5f9;"><th style="padding:0.6rem 0.5rem;font-size:0.75rem;color:#1e293b;text-align:center;font-weight:800;">Búsq.</th><th style="padding:0.6rem 0.5rem;font-size:0.75rem;color:#dc2626;text-align:center;font-weight:800;">Rechazar</th><th style="padding:0.6rem 0.5rem;font-size:0.75rem;color:#d97706;text-align:center;font-weight:800;">Zona Gris</th><th style="padding:0.6rem 0.5rem;font-size:0.75rem;color:#16a34a;text-align:center;font-weight:800;">Aceptar</th></tr></thead>
-                <tbody>
-                    <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">0.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$875</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1075</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1275</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0;background:#f8fafc"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">1.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$950</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1150</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1350</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">1.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1025</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1225</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1425</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0;background:#f8fafc"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">2.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1100</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1300</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1500</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">2.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1175</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1375</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1575</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0;background:#f8fafc"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">3.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1250</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1450</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1650</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">3.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1325</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1525</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1725</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0;background:#f8fafc"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">4.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1400</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1600</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1800</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">4.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1475</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1675</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1875</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0;background:#f8fafc"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">5.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1550</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1750</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$1950</td></tr>
-                    <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">5.5</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1625</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1825</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$2025</td></tr>
-                    <tr><td style="padding:0.55rem 0.5rem;text-align:center;color:#1e293b;font-weight:800;">6.0</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#dc2626;font-weight:700;">&lt;$1700</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#d97706;font-weight:700;">~$1900</td><td style="padding:0.55rem 0.5rem;text-align:center;color:#16a34a;font-weight:800;">&gt;$2100</td></tr>
-                </tbody>
+                <tbody id="tablaBody"></tbody>
             </table>
         </div>
         <div style="margin-top:0.75rem;background:#fff;border-radius:12px;padding:0.85rem 1rem;border-left:4px solid #d97706;border:1px solid #e2e8f0;">
@@ -459,6 +452,11 @@
             <label class="input-label">Cuota Mensual Moto</label>
             <input type="number" class="input-field" id="configCuota" placeholder="475648">
             <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.4rem;">Valor actual: <span id="configCuotaActual" style="color:var(--accent-orange);font-weight:700;">$0</span></div>
+        </div>
+        <div class="input-group">
+            <label class="input-label">Precio Combustible (por litro)</label>
+            <input type="number" class="input-field" id="configFuelPrice" placeholder="2020">
+            <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.4rem;">Costo/km estimado: <span id="configCostPerKm" style="color:var(--accent-orange);font-weight:700;">$0</span> &middot; Rendimiento fijo: 35km/L</div>
         </div>
         <div class="input-group">
             <label class="input-label">Combustible estimado por día (fallback)</label>
@@ -831,13 +829,59 @@ async function loadWeather() {
     }
 }
 
+// ── TABLA DINÁMICA ────────────────────────────
+function renderTabla() {
+    const fuelPrice = appConfig.fuelPrice||2020;
+    const rendimiento = 35;
+    const costPerKm = fuelPrice / rendimiento;
+    const factor = 15.38;
+    const base = Math.round(costPerKm * factor / 25) * 25;
+    const divisor = 150;
+    const rows = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0];
+    const tbody = document.getElementById('tablaBody');
+    if(!tbody) return;
+    tbody.innerHTML = rows.map(function(bq, i) {
+        const rechazar = base + bq * divisor;
+        const zona = rechazar + 200;
+        const aceptar = rechazar + 400;
+        const bg = i%2===0 ? '' : 'background:#f8fafc;';
+        const border = i < rows.length-1 ? 'border-bottom:1px solid #e2e8f0;' : '';
+        const td = 'padding:0.55rem 0.5rem;text-align:center;font-weight:';
+        return '<tr style="'+border+bg+'">'
+            +'<td style="'+td+'800;color:#1e293b;">'+bq.toFixed(1)+'</td>'
+            +'<td style="'+td+'700;color:#dc2626;">&lt;$'+rechazar.toLocaleString('es-AR')+'</td>'
+            +'<td style="'+td+'700;color:#d97706;">~$'+zona.toLocaleString('es-AR')+'</td>'
+            +'<td style="'+td+'800;color:#16a34a;">&gt;$'+aceptar.toLocaleString('es-AR')+'</td>'
+            +'</tr>';
+    }).join('');
+    // Update subtitle
+    const sub = document.getElementById('tablaSubtitle');
+    const info = document.getElementById('tablaPrecioInfo');
+    if(sub) sub.textContent = 'La Rioja · Costo real $'+Math.round(costPerKm)+'/km';
+    if(info) info.textContent = 'Combustible: $'+fuelPrice.toLocaleString('es-AR')+'/L · 35km/L';
+}
+
+function updateFuelLiters() {
+    const monto = parseFloat(document.getElementById('expenseAmount').value)||0;
+    const precio = parseFloat(document.getElementById('expFuelPrice').value)||0;
+    const infoEl = document.getElementById('fuelLitersInfo');
+    const valEl = document.getElementById('fuelLitersVal');
+    if(monto>0 && precio>0) {
+        const litros = (monto/precio).toFixed(2);
+        valEl.textContent = litros;
+        infoEl.style.display = 'block';
+    } else {
+        infoEl.style.display = 'none';
+    }
+}
+
 async function init() {
     await initDB();
     [journeys, activeJourney, maintenanceData, currentOdometerKm, pendingTasks, fixedExpenses, appConfig] = await Promise.all([
         dbLoadJourneys(), dbLoadActiveJourney(), dbLoadMaintenance(), dbLoadOdometer(), dbLoadPending(), dbLoadFixedExpenses(), dbLoadConfig()
     ]);
     if (activeJourney) startTimer();
-    updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses(); updateJourneyNavBtn();
+    updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses(); updateJourneyNavBtn(); renderTabla();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
     loadWeather();
 }
@@ -867,7 +911,7 @@ function switchScreen(s) {
     if(s==='dashboard'){document.getElementById('dashboardScreen').classList.add('active');document.querySelector('.nav-btn').classList.add('active');updateDashboard();loadWeather();}
     else if(s==='journey'){if(activeJourney){document.getElementById('journeyScreen').classList.add('active');document.getElementById('journeyNavBtn').classList.add('active');updateJourneyDisplay();}else{alert('No hay jornada activa');switchScreen('dashboard');}}
     else if(s==='history'){document.getElementById('historyScreen').classList.add('active');document.querySelectorAll('.nav-btn')[2].classList.add('active');updateHistory();}
-    else if(s==='tabla'){document.getElementById('tablaScreen').classList.add('active');document.querySelectorAll('.nav-btn')[3].classList.add('active');}
+    else if(s==='tabla'){document.getElementById('tablaScreen').classList.add('active');renderTabla();document.querySelectorAll('.nav-btn')[3].classList.add('active');}
     else if(s==='mantenimiento'){document.getElementById('mantenimientoScreen').classList.add('active');renderMaintenanceList();renderPendingList();}
 }
 
@@ -910,6 +954,14 @@ function showExpenseModal(t){
     ['expCash','expTransfer','expMP'].forEach(id=>document.getElementById(id).value='0');
     document.getElementById('paymentWarning').style.display='none';
     document.getElementById('conceptGroup').style.display=t==='fuel'?'none':'block';
+    const fpGroup = document.getElementById('fuelPriceGroup');
+    if(fpGroup) {
+        fpGroup.style.display = t==='fuel'?'block':'none';
+        if(t==='fuel') {
+            document.getElementById('expFuelPrice').value = appConfig.fuelPrice||2020;
+            document.getElementById('fuelLitersInfo').style.display = 'none';
+        }
+    }
     if(activeJourney&&activeJourney.startWallets){
         const sw=activeJourney.startWallets;
         const expNX=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentTransfer||0);},0);
@@ -933,7 +985,29 @@ function updatePaymentDist(f) {
     else if(f==='transfer'&&mp===0){c=Math.max(0,tot-t);ce.value=c;}
     else if(f==='mp'){if(c+t>Math.max(0,tot-mp)){ce.value=0;te.value=0;}}
     const sum=(parseFloat(ce.value)||0)+(parseFloat(te.value)||0)+(parseFloat(me.value)||0);
-    if(tot>0&&Math.abs(sum-tot)>0.01){we.textContent=`⚠️ La suma (${fc(sum)}) no coincide con el total (${fc(tot)})`;we.style.display='block';}else{we.style.display='none';}
+    if(tot>0&&Math.abs(sum-tot)>0.01){we.textContent='⚠️ La suma ('+fc(sum)+') no coincide con el total ('+fc(tot)+')';we.style.display='block';}else{we.style.display='none';}
+    // Mostrar saldo resultante dinámicamente
+    if(activeJourney&&activeJourney.startWallets){
+        const sw=activeJourney.startWallets;
+        const expNX=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentTransfer||0);},0);
+        const expMP=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentMP||0);},0);
+        const expCash=activeJourney.expenses.reduce(function(s,e){return s+(e.paymentCash||0);},0);
+        const incNX=activeJourney.incomes.reduce(function(s,i){return s+(i.nx||0);},0);
+        const incMP=activeJourney.incomes.reduce(function(s,i){return s+(i.mp||0);},0);
+        const incCash=activeJourney.incomes.reduce(function(s,i){return s+(i.cash||0);},0);
+        const curCash=(sw.cash||0)+incCash-expCash;
+        const curNX=(sw.nx||0)+incNX-expNX;
+        const curMP=(sw.mp||0)+incMP-expMP;
+        const newC=parseFloat(ce.value)||0;
+        const newT=parseFloat(te.value)||0;
+        const newMP=parseFloat(me.value)||0;
+        const cashAfter=document.getElementById('expCashAfter');
+        const transferAfter=document.getElementById('expTransferAfter');
+        const mpAfter=document.getElementById('expMPAfter');
+        if(newC>0){cashAfter.style.display='block';document.getElementById('expCashAfterVal').textContent=fc(curCash-newC);}else{cashAfter.style.display='none';}
+        if(newT>0){transferAfter.style.display='block';document.getElementById('expTransferAfterVal').textContent=fc(curNX-newT);}else{transferAfter.style.display='none';}
+        if(newMP>0){mpAfter.style.display='block';document.getElementById('expMPAfterVal').textContent=fc(curMP-newMP);}else{mpAfter.style.display='none';}
+    }
 }
 
 async function addExpense() {
@@ -1219,7 +1293,7 @@ function fc(n){return'$'+(n||0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active');}));
 
 // ── CONFIGURACIÓN ────────────────────────────
-let appConfig = { cuota: 475648, fuelFallback: 5000, motoFallback: 2000 };
+let appConfig = { cuota: 475648, fuelFallback: 5000, motoFallback: 2000, fuelPrice: 2020 };
 
 async function dbLoadConfig() {
     if (dbOk) {
@@ -1228,7 +1302,7 @@ async function dbLoadConfig() {
             if (data) { const v=JSON.parse(data.value); localStorage.setItem('appConfig',JSON.stringify(v)); return v; }
         } catch(e) { console.warn(e.message); }
     }
-    const s = localStorage.getItem('appConfig'); return s ? JSON.parse(s) : { cuota: 475648, fuelFallback: 5000, motoFallback: 2000 };
+    const s = localStorage.getItem('appConfig'); return s ? JSON.parse(s) : { cuota: 475648, fuelFallback: 5000, motoFallback: 2000, fuelPrice: 2020 };
 }
 
 async function dbSaveConfig() {
@@ -1245,7 +1319,10 @@ function showConfigModal() {
     document.getElementById('configCuota').value = appConfig.cuota;
     document.getElementById('configFuel').value = appConfig.fuelFallback;
     document.getElementById('configMoto').value = appConfig.motoFallback;
+    document.getElementById('configFuelPrice').value = appConfig.fuelPrice||2020;
     document.getElementById('configCuotaActual').textContent = fc(appConfig.cuota);
+    const cp = Math.round((appConfig.fuelPrice||2020)/35);
+    document.getElementById('configCostPerKm').textContent = '$'+cp.toLocaleString('es-AR');
     document.getElementById('configModal').classList.add('active');
 }
 
@@ -1253,10 +1330,12 @@ async function saveConfig() {
     const c=parseFloat(document.getElementById('configCuota').value)||475648;
     const f=parseFloat(document.getElementById('configFuel').value)||5000;
     const m=parseFloat(document.getElementById('configMoto').value)||2000;
-    appConfig = { cuota:c, fuelFallback:f, motoFallback:m };
+    const fp=parseFloat(document.getElementById('configFuelPrice').value)||2020;
+    appConfig = { cuota:c, fuelFallback:f, motoFallback:m, fuelPrice:fp };
     await dbSaveConfig();
     closeModal('configModal');
     updateDashboard();
+    renderTabla();
 }
 
 init();
