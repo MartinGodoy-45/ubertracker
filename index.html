@@ -343,6 +343,26 @@
     </div>
 </div>
 
+<div id="editExpenseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3 class="modal-title">✏️ Editar Gasto</h3><button class="close-btn" onclick="closeModal('editExpenseModal')">&times;</button></div>
+        <div class="input-group"><label class="input-label">Concepto</label><input type="text" class="input-field" id="editExpConcept"></div>
+        <div class="input-group"><label class="input-label">Monto Total</label><input type="number" class="input-field" id="editExpAmount"></div>
+        <div class="input-group">
+            <label class="input-label">Distribución de Pago</label>
+            <div class="wallet-inputs">
+                <div class="wallet-input"><div class="wallet-name">💵 Efectivo</div><input type="number" class="input-field" id="editExpCash" value="0"></div>
+                <div class="wallet-input"><div class="wallet-name">💳 Transferencia (NX)</div><input type="number" class="input-field" id="editExpTransfer" value="0"></div>
+                <div class="wallet-input"><div class="wallet-name">🟦 Mercado Pago</div><input type="number" class="input-field" id="editExpMP" value="0"></div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('editExpenseModal')">Cancelar</button>
+            <button class="btn btn-primary" onclick="saveEditExpense()">Guardar ✅</button>
+        </div>
+    </div>
+</div>
+
 <div id="endJourneyModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3 class="modal-title">Finalizar Jornada</h3><button class="close-btn" onclick="closeModal('endJourneyModal')">&times;</button></div>
@@ -411,7 +431,10 @@
     <div class="container" style="padding-bottom:5rem;">
         <h1 style="text-align:center;font-size:1rem;color:var(--accent-orange);text-transform:uppercase;letter-spacing:2px;margin:1rem 0 0.25rem;">🏍️ Tabla de Aceptación</h1>
         <p style="text-align:center;font-size:0.75rem;color:var(--text-secondary);margin-bottom:0.5rem;" id="tablaSubtitle">La Rioja · Costo real $58/km</p>
-        <p style="text-align:center;font-size:0.7rem;color:var(--accent-orange);margin-bottom:1rem;" id="tablaPrecioInfo">⛽ Combustible: $2.020/L · 35km/L</p>
+        <p style="text-align:center;font-size:0.7rem;color:var(--accent-orange);margin-bottom:0.75rem;" id="tablaPrecioInfo">⛽ Combustible: $2.020/L · 35km/L</p>
+        <div style="text-align:center;margin-bottom:1rem;">
+            <button onclick="downloadTablaCSV()" style="background:var(--bg-tertiary);border:1px solid var(--border);color:var(--text-secondary);padding:0.4rem 1rem;border-radius:8px;font-size:0.78rem;cursor:pointer;">📥 Descargar tabla (.csv)</button>
+        </div>
         <div style="background:#fff;border-radius:12px;overflow:hidden;border:2px solid #1e293b;">
             <div style="padding:0.65rem 1rem;background:#1e293b;"><div style="font-size:0.85rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;">Tabla de Aceptación de Viajes</div><div style="font-size:0.65rem;color:#94a3b8;margin-top:0.2rem;">Calibrada para La Rioja · $150/km</div></div>
             <table style="width:100%;border-collapse:collapse;font-family:'Courier New',monospace;">
@@ -557,7 +580,7 @@ function dbRowToJourney(row, expenses) {
         endWallets: {nx:parseFloat(row.end_nx)||0,mp:parseFloat(row.end_mp)||0,cash:parseFloat(row.end_cash)||0,uber:parseFloat(row.end_uber)||0},
         earnings: {bruta:parseFloat(row.bruta)||0,operativa:parseFloat(row.operativa)||0,neta:parseFloat(row.neta)||0,fuel:parseFloat(row.fuel)||0,moto:parseFloat(row.moto)||0,personal:parseFloat(row.personal)||0},
         incomes: row.incomes || [],
-        expenses: (expenses||[]).map(e => ({id:e.id,type:e.type,amount:parseFloat(e.amount)||0,concept:e.concept||e.type,paymentCash:parseFloat(e.payment_cash)||0,paymentTransfer:parseFloat(e.payment_transfer)||0,paymentMP:parseFloat(e.payment_mp)||0,timestamp:e.timestamp}))
+        expenses: (expenses||[]).map(e => ({id:e.id,_dbId:e.id,type:e.type,amount:parseFloat(e.amount)||0,concept:e.concept||e.type,paymentCash:parseFloat(e.payment_cash)||0,paymentTransfer:parseFloat(e.payment_transfer)||0,paymentMP:parseFloat(e.payment_mp)||0,timestamp:e.timestamp}))
     };
 }
 
@@ -588,7 +611,20 @@ async function dbUpdateActiveJourney(j) {
 
 async function dbAddExpense(journeyDbId, exp) {
     if (!dbOk) return;
-    try { await db.from('expenses').insert({journey_id:journeyDbId,type:exp.type,amount:exp.amount,concept:exp.concept,payment_cash:exp.paymentCash,payment_transfer:exp.paymentTransfer,payment_mp:exp.paymentMP,timestamp:exp.timestamp}); } catch(e) { console.warn(e.message); }
+    try {
+        const {data} = await db.from('expenses').insert({journey_id:journeyDbId,type:exp.type,amount:exp.amount,concept:exp.concept,payment_cash:exp.paymentCash,payment_transfer:exp.paymentTransfer,payment_mp:exp.paymentMP,timestamp:exp.timestamp}).select().single();
+        if(data) exp._dbId = data.id;
+    } catch(e) { console.warn(e.message); }
+}
+
+async function dbDeleteExpense(expId) {
+    if (!dbOk) return;
+    try { await db.from('expenses').delete().eq('id', expId); } catch(e) { console.warn(e.message); }
+}
+
+async function dbUpdateExpense(expId, exp) {
+    if (!dbOk) return;
+    try { await db.from('expenses').update({amount:exp.amount,concept:exp.concept,payment_cash:exp.paymentCash,payment_transfer:exp.paymentTransfer,payment_mp:exp.paymentMP}).eq('id', expId); } catch(e) { console.warn(e.message); }
 }
 
 async function dbEndJourney(j) {
@@ -764,6 +800,29 @@ function renderFixedExpenses() {
 let activeJourney=null, journeys=[], pendingTasks=[], maintenanceData={}, currentOdometerKm=0, fixedExpenses=[], journeyTimer=null, currentExpenseType=null, currentMaintenanceTaskId=null, previewData=null;
 
 
+// ── DESCARGA TABLA ────────────────────────────
+function downloadTablaCSV() {
+    const fuelPrice = appConfig.fuelPrice||2020;
+    const rendimiento = 35;
+    const costPerKm = fuelPrice / rendimiento;
+    const base = Math.round(costPerKm * 15.38 / 25) * 25;
+    const divisor = 150;
+    const rows = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0];
+    let csv = 'Busqueda (km),Rechazar,Zona Gris,Aceptar\n';
+    rows.forEach(function(bq) {
+        const r = base + bq * divisor;
+        csv += bq.toFixed(1)+',<$'+r+',~$'+(r+200)+',>$'+(r+400)+'\n';
+    });
+    csv += '\nCombustible: $'+fuelPrice+'/L | Costo/km: $'+Math.round(costPerKm)+' | La Rioja';
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tabla_aceptacion_'+fuelPrice+'pesos.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
 // ── CLIMA ─────────────────────────────────────
 async function loadWeather() {
     const card = document.getElementById('weatherCard');
@@ -929,10 +988,20 @@ function showStartJourneyModal() {
     document.getElementById('startJourneyModal').classList.add('active');
 }
 
+let _startingJourney = false;
 async function startJourney() {
-    const j = {id:Date.now(),startTime:new Date().toISOString(),startKm:parseFloat(document.getElementById('startKm').value)||0,startWallets:{nx:parseFloat(document.getElementById('startNX').value)||0,mp:parseFloat(document.getElementById('startMP').value)||0,cash:parseFloat(document.getElementById('startCash').value)||0,uber:parseFloat(document.getElementById('startUber').value)||0},expenses:[],incomes:[],uberCounter:0};
-    activeJourney = await dbStartJourney(j);
-    closeModal('startJourneyModal'); checkActiveJourney(); switchScreen('journey'); startTimer(); updateJourneyNavBtn();
+    if(_startingJourney) return;
+    _startingJourney = true;
+    document.querySelector('#startJourneyModal .btn-success').disabled = true;
+    try {
+        const j = {id:Date.now(),startTime:new Date().toISOString(),startKm:parseFloat(document.getElementById('startKm').value)||0,startWallets:{nx:parseFloat(document.getElementById('startNX').value)||0,mp:parseFloat(document.getElementById('startMP').value)||0,cash:parseFloat(document.getElementById('startCash').value)||0,uber:parseFloat(document.getElementById('startUber').value)||0},expenses:[],incomes:[],uberCounter:0};
+        activeJourney = await dbStartJourney(j);
+        closeModal('startJourneyModal'); checkActiveJourney(); switchScreen('journey'); startTimer(); updateJourneyNavBtn();
+    } finally {
+        _startingJourney = false;
+        const btn = document.querySelector('#startJourneyModal .btn-success');
+        if(btn) btn.disabled = false;
+    }
 }
 
 function startTimer() {
@@ -1010,18 +1079,64 @@ function updatePaymentDist(f) {
     }
 }
 
+let _addingExpense = false;
 async function addExpense() {
-    const amt=parseFloat(document.getElementById('expenseAmount').value),con=document.getElementById('expenseConcept').value;
-    const c=parseFloat(document.getElementById('expCash').value)||0,t=parseFloat(document.getElementById('expTransfer').value)||0,mp=parseFloat(document.getElementById('expMP').value)||0;
-    if(!amt||amt<=0){alert('Ingresá un monto válido');return;}
-    if(c===0&&t===0&&mp===0){alert('Especificá cómo se pagó');return;}
-    if(Math.abs((c+t+mp)-amt)>0.01){alert('La suma de pagos debe ser igual al monto total');return;}
-    if(currentExpenseType!=='fuel'&&!con){alert('Ingresá un concepto');return;}
-    const exp={id:Date.now(),type:currentExpenseType,amount:amt,concept:currentExpenseType==='fuel'?'Combustible':con,paymentCash:c,paymentTransfer:t,paymentMP:mp,timestamp:new Date().toISOString()};
-    activeJourney.expenses.push(exp);
-    await dbAddExpense(activeJourney._dbId, exp);
+    if(_addingExpense) return;
+    _addingExpense = true;
+    document.querySelector('#expenseModal .btn-primary').disabled = true;
+    try {
+        const amt=parseFloat(document.getElementById('expenseAmount').value),con=document.getElementById('expenseConcept').value;
+        const c=parseFloat(document.getElementById('expCash').value)||0,t=parseFloat(document.getElementById('expTransfer').value)||0,mp=parseFloat(document.getElementById('expMP').value)||0;
+        if(!amt||amt<=0){alert('Ingresá un monto válido');return;}
+        if(c===0&&t===0&&mp===0){alert('Especificá cómo se pagó');return;}
+        if(Math.abs((c+t+mp)-amt)>0.01){alert('La suma de pagos debe ser igual al monto total');return;}
+        if(currentExpenseType!=='fuel'&&!con){alert('Ingresá un concepto');return;}
+        const exp={id:Date.now(),type:currentExpenseType,amount:amt,concept:currentExpenseType==='fuel'?'Combustible':con,paymentCash:c,paymentTransfer:t,paymentMP:mp,timestamp:new Date().toISOString()};
+        activeJourney.expenses.push(exp);
+        await dbAddExpense(activeJourney._dbId, exp);
+        await dbUpdateActiveJourney(activeJourney);
+        updateJourneyDisplay(); closeModal('expenseModal');
+    } finally {
+        _addingExpense = false;
+        const btn = document.querySelector('#expenseModal .btn-primary');
+        if(btn) btn.disabled = false;
+    }
+}
+
+let _editingExpenseId = null;
+function showEditExpense(expId) {
+    const exp = activeJourney.expenses.find(function(e){ return String(e.id)===String(expId); });
+    if(!exp) return;
+    _editingExpenseId = expId;
+    document.getElementById('editExpConcept').value = exp.concept;
+    document.getElementById('editExpAmount').value = exp.amount;
+    document.getElementById('editExpCash').value = exp.paymentCash||0;
+    document.getElementById('editExpTransfer').value = exp.paymentTransfer||0;
+    document.getElementById('editExpMP').value = exp.paymentMP||0;
+    document.getElementById('editExpenseModal').classList.add('active');
+}
+
+async function saveEditExpense() {
+    const exp = activeJourney.expenses.find(function(e){ return String(e.id)===String(_editingExpenseId); });
+    if(!exp) return;
+    exp.concept = document.getElementById('editExpConcept').value;
+    exp.amount = parseFloat(document.getElementById('editExpAmount').value)||0;
+    exp.paymentCash = parseFloat(document.getElementById('editExpCash').value)||0;
+    exp.paymentTransfer = parseFloat(document.getElementById('editExpTransfer').value)||0;
+    exp.paymentMP = parseFloat(document.getElementById('editExpMP').value)||0;
+    await dbUpdateExpense(exp._dbId||null, exp);
     await dbUpdateActiveJourney(activeJourney);
-    updateJourneyDisplay(); closeModal('expenseModal');
+    updateJourneyDisplay();
+    closeModal('editExpenseModal');
+}
+
+async function deleteExpense(expId) {
+    if(!confirm('¿Eliminar este gasto?')) return;
+    const exp = activeJourney.expenses.find(function(e){ return String(e.id)===String(expId); });
+    if(exp && exp._dbId) await dbDeleteExpense(exp._dbId);
+    activeJourney.expenses = activeJourney.expenses.filter(function(e){ return String(e.id)!==String(expId); });
+    await dbUpdateActiveJourney(activeJourney);
+    updateJourneyDisplay();
 }
 
 function showIncomeModal(){
@@ -1067,8 +1182,26 @@ function updateJourneyDisplay() {
     const mpi=activeJourney.incomes.reduce((s,i)=>s+(i.mp||0),0),mpe=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0);
     document.getElementById('currentMP').textContent=fc((activeJourney.startWallets.mp||0)+mpi-mpe);
     const el=document.getElementById('expenseList');
-    el.innerHTML=!activeJourney.expenses.length?'':'<div style="margin-top:1rem;margin-bottom:0.5rem;font-weight:700;font-size:0.9rem;">Gastos Registrados:</div>'+
-        activeJourney.expenses.map(exp=>{const em=exp.type==='fuel'?'⛽':exp.type==='moto'?'🔧':'🍔';let p=[];if(exp.paymentCash>0)p.push(`💵 ${fc(exp.paymentCash)}`);if(exp.paymentTransfer>0)p.push(`💳 ${fc(exp.paymentTransfer)}`);if(exp.paymentMP>0)p.push(`🟦 ${fc(exp.paymentMP)}`);return`<div class="expense-item"><div><div>${em} ${exp.concept}</div><div class="expense-concept">${p.join(' + ')}</div></div><div class="expense-amount ${exp.type}">-${fc(exp.amount)}</div></div>`;}).join('');
+    if(!activeJourney.expenses.length){el.innerHTML='';return;}
+    el.innerHTML='<div style="margin-top:1rem;margin-bottom:0.5rem;font-weight:700;font-size:0.9rem;">Gastos Registrados:</div>'+
+        activeJourney.expenses.map(function(exp){
+            const em=exp.type==='fuel'?'⛽':exp.type==='moto'?'🔧':'🍔';
+            let p=[];
+            if(exp.paymentCash>0)p.push('💵 '+fc(exp.paymentCash));
+            if(exp.paymentTransfer>0)p.push('💳 '+fc(exp.paymentTransfer));
+            if(exp.paymentMP>0)p.push('🟦 '+fc(exp.paymentMP));
+            return '<div class="expense-item" style="position:relative;">'
+                +'<div style="flex:1;min-width:0;">'
+                +'<div>'+em+' '+exp.concept+'</div>'
+                +'<div class="expense-concept">'+p.join(' + ')+'</div>'
+                +'</div>'
+                +'<div style="display:flex;align-items:center;gap:0.4rem;">'
+                +'<div class="expense-amount '+exp.type+'">-'+fc(exp.amount)+'</div>'
+                +'<button onclick="showEditExpense('+JSON.stringify(String(exp.id))+')" style="background:none;border:none;font-size:1rem;cursor:pointer;padding:0.2rem;">✏️</button>'
+                +'<button onclick="deleteExpense('+JSON.stringify(String(exp.id))+')" style="background:none;border:none;font-size:1rem;cursor:pointer;padding:0.2rem;">🗑️</button>'
+                +'</div>'
+                +'</div>';
+        }).join('');
 }
 
 function showEndJourneyModal(){document.getElementById('endKm').value='';document.getElementById('endUberCounter').value=activeJourney?.uberCounter||'';['endNX','endMP','endCash','endUber'].forEach(id=>document.getElementById(id).value='');document.getElementById('endJourneyModal').classList.add('active');}
