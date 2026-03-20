@@ -270,6 +270,7 @@
                 <button class="quick-btn personal" onclick="showExpenseModal('personal')">🍔 Gasto Personal</button>
                 <button class="quick-btn income" onclick="showIncomeModal()">💰 Registrar Ingreso</button>
             </div>
+            <div id="incomeList"></div>
             <div id="expenseList"></div>
             <button class="btn btn-danger" onclick="showEndJourneyModal()" style="margin-top:1rem;">Finalizar Jornada</button>
         </div>
@@ -371,8 +372,9 @@
         <div class="wallet-inputs">
             <div class="wallet-input"><div class="wallet-name">Saldo Final Naranja NX</div><input type="number" class="input-field" id="endNX" placeholder="$0"></div>
             <div class="wallet-input"><div class="wallet-name">Saldo Final Mercado Pago</div><input type="number" class="input-field" id="endMP" placeholder="$0"></div>
-            <div class="wallet-input"><div class="wallet-name">Saldo Final Efectivo</div><input type="number" class="input-field" id="endCash" placeholder="$0"></div>
+            <div class="wallet-input"><div class="wallet-name">Saldo Final Efectivo (billetera)</div><input type="number" class="input-field" id="endCash" placeholder="$0"></div>
             <div class="wallet-input"><div class="wallet-name">Saldo Final Uber Wallet</div><input type="number" class="input-field" id="endUber" placeholder="$0"></div>
+            <div class="wallet-input" style="border-color:var(--accent-orange);"><div class="wallet-name" style="color:var(--accent-orange);">🏠 Caja (efectivo en casa)</div><input type="number" class="input-field" id="endCaja" placeholder="$0"></div>
         </div>
         <div class="modal-actions">
             <button class="btn btn-secondary" onclick="closeModal('endJourneyModal')">Cancelar</button>
@@ -1166,6 +1168,13 @@ async function addIncome() {
     updateJourneyDisplay(); closeModal('incomeModal');
 }
 
+async function deleteIncome(incId) {
+    if(!confirm('¿Eliminar este ingreso?')) return;
+    activeJourney.incomes = activeJourney.incomes.filter(function(i){ return String(i.id)!==String(incId); });
+    await dbUpdateActiveJourney(activeJourney);
+    updateJourneyDisplay();
+}
+
 function updateJourneyDisplay() {
     if(!activeJourney)return;
     document.getElementById('kmStart').textContent=activeJourney.startKm;
@@ -1181,6 +1190,33 @@ function updateJourneyDisplay() {
     document.getElementById('currentUberWallet').textContent=fc((activeJourney.startWallets.uber||0)+ui);
     const mpi=activeJourney.incomes.reduce((s,i)=>s+(i.mp||0),0),mpe=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0);
     document.getElementById('currentMP').textContent=fc((activeJourney.startWallets.mp||0)+mpi-mpe);
+    // Render income list with delete button
+    const il=document.getElementById('incomeList');
+    if(il){
+        const manualIncomes=activeJourney.incomes.filter(function(i){return !i.auto;});
+        if(!manualIncomes.length){il.innerHTML='';}
+        else{
+            il.innerHTML='<div style="margin-top:1rem;margin-bottom:0.5rem;font-weight:700;font-size:0.9rem;">Ingresos Registrados:</div>'+
+            manualIncomes.map(function(inc){
+                let parts=[];
+                if(inc.nx>0)parts.push('💳 '+fc(inc.nx));
+                if(inc.mp>0)parts.push('🟦 '+fc(inc.mp));
+                if(inc.cash>0)parts.push('💵 '+fc(inc.cash));
+                if(inc.uber>0)parts.push('🟣 '+fc(inc.uber));
+                const total=(inc.nx||0)+(inc.mp||0)+(inc.cash||0)+(inc.uber||0);
+                return '<div class="expense-item">'
+                    +'<div style="flex:1;min-width:0;">'
+                    +'<div>💰 Ingreso manual</div>'
+                    +'<div class="expense-concept">'+parts.join(' + ')+'</div>'
+                    +'</div>'
+                    +'<div style="display:flex;align-items:center;gap:0.4rem;">'
+                    +'<div class="expense-amount fuel">+'+fc(total)+'</div>'
+                    +'<button onclick="deleteIncome('+JSON.stringify(String(inc.id))+')" style="background:none;border:none;font-size:1rem;cursor:pointer;padding:0.2rem;">🗑️</button>'
+                    +'</div>'
+                    +'</div>';
+            }).join('');
+        }
+    }
     const el=document.getElementById('expenseList');
     if(!activeJourney.expenses.length){el.innerHTML='';return;}
     el.innerHTML='<div style="margin-top:1rem;margin-bottom:0.5rem;font-weight:700;font-size:0.9rem;">Gastos Registrados:</div>'+
@@ -1204,17 +1240,17 @@ function updateJourneyDisplay() {
         }).join('');
 }
 
-function showEndJourneyModal(){document.getElementById('endKm').value='';document.getElementById('endUberCounter').value=activeJourney?.uberCounter||'';['endNX','endMP','endCash','endUber'].forEach(id=>document.getElementById(id).value='');document.getElementById('endJourneyModal').classList.add('active');}
+function showEndJourneyModal(){document.getElementById('endKm').value='';document.getElementById('endUberCounter').value=activeJourney?.uberCounter||'';['endNX','endMP','endCash','endUber','endCaja'].forEach(id=>document.getElementById(id).value='');document.getElementById('endJourneyModal').classList.add('active');}
 
 function previewEndJourney(){
-    const ek=parseFloat(document.getElementById('endKm').value)||0,eNX=parseFloat(document.getElementById('endNX').value)||0,eMP=parseFloat(document.getElementById('endMP').value)||0,eCash=parseFloat(document.getElementById('endCash').value)||0,eUber=parseFloat(document.getElementById('endUber').value)||0,eUC=parseFloat(document.getElementById('endUberCounter').value)||activeJourney.uberCounter||0;
-    previewData={endKm:ek,endNX:eNX,endMP:eMP,endCash:eCash,endUber:eUber,endUberCounter:eUC};
+    const ek=parseFloat(document.getElementById('endKm').value)||0,eNX=parseFloat(document.getElementById('endNX').value)||0,eMP=parseFloat(document.getElementById('endMP').value)||0,eCash=parseFloat(document.getElementById('endCash').value)||0,eUber=parseFloat(document.getElementById('endUber').value)||0,eUC=parseFloat(document.getElementById('endUberCounter').value)||activeJourney.uberCounter||0,eCaja=parseFloat(document.getElementById('endCaja').value)||0;
+    previewData={endKm:ek,endNX:eNX,endMP:eMP,endCash:eCash,endUber:eUber,endUberCounter:eUC,endCaja:eCaja};
     const sw=activeJourney.startWallets,gNX=activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0),gMP=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0),gC=activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
-    const iNX=(eNX-(sw.nx||0))+gNX,iMP=(eMP-(sw.mp||0))+gMP,iC=(eCash-(sw.cash||0))+gC,iU=(eUber-(sw.uber||0));
+    const iNX=(eNX-(sw.nx||0))+gNX,iMP=(eMP-(sw.mp||0))+gMP,iC=(eCash-(sw.cash||0))+gC,iU=(eUber-(sw.uber||0)),iCaja=eCaja||0;
     const fuel=activeJourney.expenses.filter(e=>e.type==='fuel').reduce((s,e)=>s+e.amount,0),moto=activeJourney.expenses.filter(e=>e.type==='moto').reduce((s,e)=>s+e.amount,0),pers=activeJourney.expenses.filter(e=>e.type==='personal').reduce((s,e)=>s+e.amount,0);
-    const bruta=Math.max(0,iNX)+Math.max(0,iMP)+Math.max(0,iC)+Math.max(0,iU);
+    const bruta=Math.max(0,iNX)+Math.max(0,iMP)+Math.max(0,iC)+Math.max(0,iU)+iCaja;
     const rs='display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;';
-    let ih='';[{l:'💳 NX',v:iNX},{l:'🟦 MP',v:iMP},{l:'💵 Efectivo',v:iC},{l:'🟣 Uber Wallet',v:iU}].forEach(w=>{ih+=`<div style="${rs}"><span>${w.l}</span><span style="font-family:monospace;font-weight:700;color:${w.v<0?'var(--accent-red)':'var(--accent-green)'}">${w.v>=0?'+':''}${fc(w.v)}</span></div>`;});
+    let ih='';[{l:'💳 NX',v:iNX},{l:'🟦 MP',v:iMP},{l:'💵 Efectivo',v:iC},{l:'🟣 Uber Wallet',v:iU},{l:'🏠 Caja',v:iCaja}].forEach(w=>{ih+=`<div style="${rs}"><span>${w.l}</span><span style="font-family:monospace;font-weight:700;color:${w.v<0?'var(--accent-red)':'var(--accent-green)'}">${w.v>=0?'+':''}${fc(w.v)}</span></div>`;});
     document.getElementById('previewIncomes').innerHTML=ih;
     let eh='';if(fuel>0)eh+=`<div style="${rs}"><span>⛽ Combustible</span><span style="font-family:monospace;color:var(--accent-orange)">-${fc(fuel)}</span></div>`;if(moto>0)eh+=`<div style="${rs}"><span>🔧 Gastos Moto</span><span style="font-family:monospace;color:var(--accent-blue)">-${fc(moto)}</span></div>`;if(pers>0)eh+=`<div style="${rs}"><span>🍔 Gastos Personales</span><span style="font-family:monospace;color:var(--accent-red)">-${fc(pers)}</span></div>`;if(!eh)eh='<div style="color:var(--text-secondary);font-size:0.85rem;">Sin gastos</div>';
     document.getElementById('previewExpenses').innerHTML=eh;
@@ -1226,11 +1262,11 @@ function previewEndJourney(){
 }
 
 async function endJourney(){
-    const{endKm,endNX,endMP,endCash,endUber,endUberCounter}=previewData;
+    const{endKm,endNX,endMP,endCash,endUber,endUberCounter,endCaja}=previewData;
     const sw=activeJourney.startWallets;
     const gNX=activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0),gMP=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0),gC=activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
-    const iNX=(endNX-(sw.nx||0))+gNX,iMP=(endMP-(sw.mp||0))+gMP,iC=(endCash-(sw.cash||0))+gC,iU=(endUber-(sw.uber||0));
-    if(activeJourney.incomes.length===0) activeJourney.incomes.push({id:Date.now(),nx:Math.max(0,iNX),mp:Math.max(0,iMP),cash:Math.max(0,iC),uber:Math.max(0,iU),timestamp:new Date().toISOString(),auto:true});
+    const iNX=(endNX-(sw.nx||0))+gNX,iMP=(endMP-(sw.mp||0))+gMP,iC=(endCash-(sw.cash||0))+gC,iU=(endUber-(sw.uber||0)),iCaja2=endCaja||0;
+    if(activeJourney.incomes.length===0) activeJourney.incomes.push({id:Date.now(),nx:Math.max(0,iNX),mp:Math.max(0,iMP),cash:Math.max(0,iC)+iCaja2,uber:Math.max(0,iU),timestamp:new Date().toISOString(),auto:true});
     const ti=activeJourney.incomes.reduce((s,i)=>s+(i.nx||0)+(i.mp||0)+(i.cash||0)+(i.uber||0),0);
     const fe=activeJourney.expenses.filter(e=>e.type==='fuel').reduce((s,e)=>s+e.amount,0),me=activeJourney.expenses.filter(e=>e.type==='moto').reduce((s,e)=>s+e.amount,0),pe=activeJourney.expenses.filter(e=>e.type==='personal').reduce((s,e)=>s+e.amount,0);
     activeJourney.endTime=new Date().toISOString();activeJourney.endKm=endKm;activeJourney.uberCounter=endUberCounter;
