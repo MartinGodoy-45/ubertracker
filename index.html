@@ -1168,7 +1168,8 @@ async function addIncome() {
     updateJourneyDisplay(); closeModal('incomeModal');
 }
 
-async function deleteIncome(incId) {
+async function deleteIncome(btn) {
+    const incId = btn.getAttribute('data-incid');
     if(!confirm('¿Eliminar este ingreso?')) return;
     activeJourney.incomes = activeJourney.incomes.filter(function(i){ return String(i.id)!==String(incId); });
     await dbUpdateActiveJourney(activeJourney);
@@ -1204,6 +1205,7 @@ function updateJourneyDisplay() {
                 if(inc.cash>0)parts.push('💵 '+fc(inc.cash));
                 if(inc.uber>0)parts.push('🟣 '+fc(inc.uber));
                 const total=(inc.nx||0)+(inc.mp||0)+(inc.cash||0)+(inc.uber||0);
+                const incIdStr=String(inc.id);
                 return '<div class="expense-item">'
                     +'<div style="flex:1;min-width:0;">'
                     +'<div>💰 Ingreso manual</div>'
@@ -1211,7 +1213,7 @@ function updateJourneyDisplay() {
                     +'</div>'
                     +'<div style="display:flex;align-items:center;gap:0.4rem;">'
                     +'<div class="expense-amount fuel">+'+fc(total)+'</div>'
-                    +'<button onclick="deleteIncome('+JSON.stringify(String(inc.id))+')" style="background:none;border:none;font-size:1rem;cursor:pointer;padding:0.2rem;">🗑️</button>'
+                    +'<button onclick="deleteIncome(this)" data-incid="'+incIdStr+'" style="background:none;border:none;font-size:1rem;cursor:pointer;padding:0.2rem;">🗑️</button>'
                     +'</div>'
                     +'</div>';
             }).join('');
