@@ -1266,15 +1266,25 @@ function previewEndJourney(){
 async function endJourney(){
     const{endKm,endNX,endMP,endCash,endUber,endUberCounter,endCaja}=previewData;
     const sw=activeJourney.startWallets;
-    const gNX=activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0),gMP=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0),gC=activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
-    const iNX=(endNX-(sw.nx||0))+gNX,iMP=(endMP-(sw.mp||0))+gMP,iC=(endCash-(sw.cash||0))+gC,iU=(endUber-(sw.uber||0)),iCaja2=endCaja||0;
-    if(activeJourney.incomes.length===0) activeJourney.incomes.push({id:Date.now(),nx:Math.max(0,iNX),mp:Math.max(0,iMP),cash:Math.max(0,iC)+iCaja2,uber:Math.max(0,iU),timestamp:new Date().toISOString(),auto:true});
-    const ti=activeJourney.incomes.reduce((s,i)=>s+(i.nx||0)+(i.mp||0)+(i.cash||0)+(i.uber||0),0);
-    const fe=activeJourney.expenses.filter(e=>e.type==='fuel').reduce((s,e)=>s+e.amount,0),me=activeJourney.expenses.filter(e=>e.type==='moto').reduce((s,e)=>s+e.amount,0),pe=activeJourney.expenses.filter(e=>e.type==='personal').reduce((s,e)=>s+e.amount,0);
+    // Gastos pagados por cada billetera
+    const gNX=activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0);
+    const gMP=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0);
+    const gC=activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
+    // Ingreso real por billetera = (saldo final - saldo inicial) + lo que gastaste de esa billetera
+    const iNX=(endNX-(sw.nx||0))+gNX;
+    const iMP=(endMP-(sw.mp||0))+gMP;
+    const iC=(endCash-(sw.cash||0))+gC;
+    const iU=(endUber-(sw.uber||0));
+    const iCaja2=endCaja||0;
+    // Bruta = suma de ingresos reales por billetera (siempre desde diferencia de saldos)
+    const bruta=Math.max(0,iNX)+Math.max(0,iMP)+Math.max(0,iC)+Math.max(0,iU)+iCaja2;
+    const fe=activeJourney.expenses.filter(e=>e.type==='fuel').reduce((s,e)=>s+e.amount,0);
+    const me=activeJourney.expenses.filter(e=>e.type==='moto').reduce((s,e)=>s+e.amount,0);
+    const pe=activeJourney.expenses.filter(e=>e.type==='personal').reduce((s,e)=>s+e.amount,0);
     activeJourney.endTime=new Date().toISOString();activeJourney.endKm=endKm;activeJourney.uberCounter=endUberCounter;
     activeJourney.endWallets={nx:endNX,mp:endMP,cash:endCash,uber:endUber};
     activeJourney.kmTraveled=endKm-activeJourney.startKm;
-    activeJourney.earnings={bruta:ti,operativa:ti-fe-me,neta:ti-fe-me-pe,fuel:fe,moto:me,personal:pe};
+    activeJourney.earnings={bruta:bruta,operativa:bruta-fe-me,neta:bruta-fe-me-pe,fuel:fe,moto:me,personal:pe};
     await dbEndJourney(activeJourney);
     journeys.push(activeJourney);activeJourney=null;previewData=null;
     if(journeyTimer){clearInterval(journeyTimer);journeyTimer=null;}
