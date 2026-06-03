@@ -187,6 +187,27 @@
             </div>
         </div>
 
+        <!-- RESUMEN MENSUAL -->
+        <div class="card" style="border:1px solid rgba(96,165,250,0.3);background:rgba(96,165,250,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <div class="card-title" style="margin:0;color:var(--accent-blue);">📊 Resumen Mensual</div>
+                <button onclick="showAddLoanModal()" style="background:none;border:1px solid var(--accent-blue);color:var(--accent-blue);padding:0.3rem 0.7rem;border-radius:6px;font-size:0.8rem;cursor:pointer;font-weight:700;">+ Préstamo</button>
+            </div>
+            <div id="monthlySummaryContent">
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;font-size:0.85rem;"><span style="color:var(--text-secondary);">Bruta total:</span><span style="font-family:monospace;font-weight:700;color:var(--accent-green);" id="summaryBruta">$0</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;font-size:0.85rem;"><span style="color:var(--text-secondary);">Combustible:</span><span style="font-family:monospace;color:var(--accent-orange);" id="summaryFuel">$0</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;font-size:0.85rem;"><span style="color:var(--text-secondary);">Gastos moto:</span><span style="font-family:monospace;color:var(--accent-blue);" id="summaryMoto">$0</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;font-size:0.85rem;"><span style="color:var(--text-secondary);">Gastos personales:</span><span style="font-family:monospace;color:var(--accent-red);" id="summaryPersonal">$0</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.75rem;font-size:0.95rem;font-weight:700;border-top:1px solid var(--border);padding-top:0.4rem;margin-top:0.2rem;"><span>Neta total:</span><span style="font-family:monospace;color:var(--accent-green);" id="summaryNeta">$0</span></div>
+                <div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;margin-bottom:0.5rem;">💸 Préstamos a devolver</div>
+                <div id="loansList"><div style="font-size:0.8rem;color:var(--text-secondary);text-align:center;padding:0.3rem;">Sin préstamos cargados</div></div>
+                <div style="display:flex;justify-content:space-between;padding-top:0.5rem;margin-top:0.4rem;border-top:1px solid rgba(248,113,113,0.4);font-weight:700;font-size:0.9rem;">
+                    <span style="color:var(--accent-red);">Total a devolver:</span>
+                    <span style="font-family:monospace;color:var(--accent-red);" id="totalLoans">$0</span>
+                </div>
+            </div>
+        </div>
+
         <div class="card" style="background:linear-gradient(135deg,rgba(251,146,60,0.12),rgba(74,222,128,0.12));border:2px solid transparent;background-clip:padding-box;position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;border-radius:15px;padding:2px;background:linear-gradient(135deg,var(--accent-orange),var(--accent-green));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
             <div class="card-title" style="background:linear-gradient(90deg,var(--accent-orange),var(--accent-green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🫙 Frascos del Mes</div>
@@ -466,6 +487,30 @@
         </div>
         <div id="addPendingModal" class="modal"><div class="modal-content"><div class="modal-header"><h3 class="modal-title">Nuevo Pendiente</h3><button class="close-btn" onclick="closeModal('addPendingModal')">&times;</button></div><div class="input-group"><label class="input-label">Descripción</label><input type="text" class="input-field" id="pendingDescInput" placeholder="Ej: Ajustar guiñe delantero izquierdo"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('addPendingModal')">Cancelar</button><button class="btn btn-success" onclick="savePending()">Agregar ✅</button></div></div></div>
         <div id="maintenanceModal" class="modal"><div class="modal-content"><div class="modal-header"><h3 class="modal-title" id="maintenanceModalTitle">Registrar Tarea</h3><button class="close-btn" onclick="closeModal('maintenanceModal')">&times;</button></div><div class="input-group"><label class="input-label">KM al realizar la tarea</label><input type="number" class="input-field" id="maintenanceKmInput" placeholder="Ej: 5800"></div><div class="input-group"><label class="input-label">Notas (opcional)</label><input type="text" class="input-field" id="maintenanceNotesInput" placeholder="Ej: Aceite Motul 10W40"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('maintenanceModal')">Cancelar</button><button class="btn btn-success" onclick="saveMaintenanceTask()">Registrar ✅</button></div></div></div>
+    </div>
+</div>
+
+<!-- MODAL PRÉSTAMO -->
+<div id="addLoanModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3 class="modal-title">💸 Agregar Préstamo</h3><button class="close-btn" onclick="closeModal('addLoanModal')">&times;</button></div>
+        <div class="input-group"><label class="input-label">Descripción</label><input type="text" class="input-field" id="loanDesc" placeholder="Ej: Préstamo pareja"></div>
+        <div class="input-group"><label class="input-label">Monto</label><input type="number" class="input-field" id="loanAmount" placeholder="0"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('addLoanModal')">Cancelar</button>
+            <button class="btn btn-success" onclick="saveLoan()">Guardar ✅</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DETALLE JORNADA -->
+<div id="journeyDetailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📋 Detalle de Jornada</h3>
+            <button class="close-btn" onclick="closeModal('journeyDetailModal')">&times;</button>
+        </div>
+        <div id="journeyDetailContent"></div>
     </div>
 </div>
 
@@ -938,11 +983,11 @@ function updateFuelLiters() {
 
 async function init() {
     await initDB();
-    [journeys, activeJourney, maintenanceData, currentOdometerKm, pendingTasks, fixedExpenses, appConfig] = await Promise.all([
-        dbLoadJourneys(), dbLoadActiveJourney(), dbLoadMaintenance(), dbLoadOdometer(), dbLoadPending(), dbLoadFixedExpenses(), dbLoadConfig()
+    [journeys, activeJourney, maintenanceData, currentOdometerKm, pendingTasks, fixedExpenses, appConfig, loans] = await Promise.all([
+        dbLoadJourneys(), dbLoadActiveJourney(), dbLoadMaintenance(), dbLoadOdometer(), dbLoadPending(), dbLoadFixedExpenses(), dbLoadConfig(), dbLoadLoans()
     ]);
     if (activeJourney) startTimer();
-    updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses(); updateJourneyNavBtn(); renderTabla();
+    updateDashboard(); updateHistory(); updateMaintenancePreview(); checkActiveJourney(); renderFixedExpenses(); updateJourneyNavBtn(); updateMonthlySummary(); renderTabla();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
     loadWeather();
 }
@@ -1247,19 +1292,47 @@ function showEndJourneyModal(){document.getElementById('endKm').value='';documen
 function previewEndJourney(){
     const ek=parseFloat(document.getElementById('endKm').value)||0,eNX=parseFloat(document.getElementById('endNX').value)||0,eMP=parseFloat(document.getElementById('endMP').value)||0,eCash=parseFloat(document.getElementById('endCash').value)||0,eUber=parseFloat(document.getElementById('endUber').value)||0,eUC=parseFloat(document.getElementById('endUberCounter').value)||activeJourney.uberCounter||0,eCaja=parseFloat(document.getElementById('endCaja').value)||0;
     previewData={endKm:ek,endNX:eNX,endMP:eMP,endCash:eCash,endUber:eUber,endUberCounter:eUC,endCaja:eCaja};
-    const sw=activeJourney.startWallets,gNX=activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0),gMP=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0),gC=activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
-    const iNX=(eNX-(sw.nx||0))+gNX,iMP=(eMP-(sw.mp||0))+gMP,iC=(eCash-(sw.cash||0))+gC,iU=(eUber-(sw.uber||0)),iCaja=eCaja||0;
+    const sw=activeJourney.startWallets;
+    const gNX=activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0),gMP=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0),gC=activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
     const fuel=activeJourney.expenses.filter(e=>e.type==='fuel').reduce((s,e)=>s+e.amount,0),moto=activeJourney.expenses.filter(e=>e.type==='moto').reduce((s,e)=>s+e.amount,0),pers=activeJourney.expenses.filter(e=>e.type==='personal').reduce((s,e)=>s+e.amount,0);
-    const bruta=Math.max(0,iNX)+Math.max(0,iMP)+Math.max(0,iC)+Math.max(0,iU)+iCaja;
+
+    // Bruta: uber_counter + ingresos directos en otras billeteras + caja
+    // uber_counter es el total facturado en Uber (fuente más confiable)
+    const uberCounterVal = eUC || 0;
+    const iNX = Math.max(0, (eNX - (sw.nx||0)) + gNX);
+    const iMP = Math.max(0, (eMP - (sw.mp||0)) + gMP);
+    const iC  = Math.max(0, (eCash - (sw.cash||0)) + gC);
+    const iU  = Math.max(0, (eUber - (sw.uber||0)));
+    const iCaja = eCaja || 0;
+    // Si uber_counter > 0, usarlo como base y sumar solo lo que NO pasó por Uber
+    let bruta;
+    if(uberCounterVal > 0){
+        // NX, MP, Cash y UberWallet pueden tener ingresos directos (viajes particulares, etc)
+        // Pero no sumamos iU porque ya está dentro del uber_counter
+        const directExtras = iNX + iMP + iC + iCaja;
+        bruta = uberCounterVal + directExtras;
+    } else {
+        bruta = iNX + iMP + iC + iU + iCaja;
+    }
+
     const rs='display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;';
-    let ih='';[{l:'💳 NX',v:iNX},{l:'🟦 MP',v:iMP},{l:'💵 Efectivo',v:iC},{l:'🟣 Uber Wallet',v:iU},{l:'🏠 Caja',v:iCaja}].forEach(w=>{ih+=`<div style="${rs}"><span>${w.l}</span><span style="font-family:monospace;font-weight:700;color:${w.v<0?'var(--accent-red)':'var(--accent-green)'}">${w.v>=0?'+':''}${fc(w.v)}</span></div>`;});
+    let ih='';
+    if(uberCounterVal>0){
+        ih+=`<div style="${rs}"><span>🟣 Uber (contador)</span><span style="font-family:monospace;font-weight:700;color:var(--accent-green)">+${fc(uberCounterVal)}</span></div>`;
+        if(iNX>0)ih+=`<div style="${rs}"><span>💳 NX (directo)</span><span style="font-family:monospace;font-weight:700;color:var(--accent-green)">+${fc(iNX)}</span></div>`;
+        if(iMP>0)ih+=`<div style="${rs}"><span>🟦 MP (directo)</span><span style="font-family:monospace;font-weight:700;color:var(--accent-green)">+${fc(iMP)}</span></div>`;
+        if(iC>0)ih+=`<div style="${rs}"><span>💵 Efectivo</span><span style="font-family:monospace;font-weight:700;color:var(--accent-green)">+${fc(iC)}</span></div>`;
+        if(iCaja>0)ih+=`<div style="${rs}"><span>🏠 Caja</span><span style="font-family:monospace;font-weight:700;color:var(--accent-green)">+${fc(iCaja)}</span></div>`;
+    } else {
+        [{l:'💳 NX',v:iNX},{l:'🟦 MP',v:iMP},{l:'💵 Efectivo',v:iC},{l:'🟣 Uber Wallet',v:iU},{l:'🏠 Caja',v:iCaja}].forEach(w=>{if(w.v!==0)ih+=`<div style="${rs}"><span>${w.l}</span><span style="font-family:monospace;font-weight:700;color:${w.v<0?'var(--accent-red)':'var(--accent-green)'}">${w.v>=0?'+':''}${fc(w.v)}</span></div>`;});
+    }
     ih+=`<div style="display:flex;justify-content:space-between;padding-top:0.5rem;margin-top:0.25rem;border-top:1px solid var(--border);font-size:0.95rem;"><span style="font-weight:700;">📊 Total recaudado</span><span style="font-family:monospace;font-weight:800;color:${bruta>0?'var(--accent-green)':'var(--accent-red)'}">${fc(bruta)}</span></div>`;
     document.getElementById('previewIncomes').innerHTML=ih;
     let eh='';if(fuel>0)eh+=`<div style="${rs}"><span>⛽ Combustible</span><span style="font-family:monospace;color:var(--accent-orange)">-${fc(fuel)}</span></div>`;if(moto>0)eh+=`<div style="${rs}"><span>🔧 Gastos Moto</span><span style="font-family:monospace;color:var(--accent-blue)">-${fc(moto)}</span></div>`;if(pers>0)eh+=`<div style="${rs}"><span>🍔 Gastos Personales</span><span style="font-family:monospace;color:var(--accent-red)">-${fc(pers)}</span></div>`;if(!eh)eh='<div style="color:var(--text-secondary);font-size:0.85rem;">Sin gastos</div>';
     document.getElementById('previewExpenses').innerHTML=eh;
     const neta=bruta-fuel-moto-pers;
     document.getElementById('previewResult').innerHTML=`<div style="${rs}font-size:1rem;"><span style="font-weight:700;">💰 Bruta</span><span style="font-family:monospace;font-weight:700;color:var(--accent-green)">${fc(bruta)}</span></div><div style="${rs}"><span>Operativa</span><span style="font-family:monospace;color:var(--accent-green)">${fc(bruta-fuel-moto)}</span></div><div style="display:flex;justify-content:space-between;padding-top:0.5rem;border-top:1px solid var(--accent-green);"><span style="font-weight:700;">🏁 Neta</span><span style="font-family:monospace;font-weight:800;color:var(--accent-green)">${fc(neta)}</span></div>`;
-    const w=[];if(iNX<-5000)w.push(`⚠️ NX bajó mucho — ¿correcto?`);if(bruta===0)w.push(`⚠️ Recaudación $0 — revisá los saldos`);
+    const w=[];if(iNX<-5000&&manualTotal===0)w.push(`⚠️ NX bajó mucho — ¿correcto?`);if(bruta===0)w.push(`⚠️ Recaudación $0 — revisá los saldos`);
     const wd=document.getElementById('previewWarning');wd.innerHTML=w.join('<br>');wd.style.display=w.length?'block':'none';
     closeModal('endJourneyModal');document.getElementById('confirmEndModal').classList.add('active');
 }
@@ -1267,21 +1340,24 @@ function previewEndJourney(){
 async function endJourney(){
     const{endKm,endNX,endMP,endCash,endUber,endUberCounter,endCaja}=previewData;
     const sw=activeJourney.startWallets;
-    // Gastos pagados por cada billetera
     const gNX=activeJourney.expenses.reduce((s,e)=>s+(e.paymentTransfer||0),0);
     const gMP=activeJourney.expenses.reduce((s,e)=>s+(e.paymentMP||0),0);
     const gC=activeJourney.expenses.reduce((s,e)=>s+(e.paymentCash||0),0);
-    // Ingreso real por billetera = (saldo final - saldo inicial) + lo que gastaste de esa billetera
-    const iNX=(endNX-(sw.nx||0))+gNX;
-    const iMP=(endMP-(sw.mp||0))+gMP;
-    const iC=(endCash-(sw.cash||0))+gC;
-    const iU=(endUber-(sw.uber||0));
-    const iCaja2=endCaja||0;
-    // Bruta = suma de ingresos reales por billetera (siempre desde diferencia de saldos)
-    const bruta=Math.max(0,iNX)+Math.max(0,iMP)+Math.max(0,iC)+Math.max(0,iU)+iCaja2;
     const fe=activeJourney.expenses.filter(e=>e.type==='fuel').reduce((s,e)=>s+e.amount,0);
     const me=activeJourney.expenses.filter(e=>e.type==='moto').reduce((s,e)=>s+e.amount,0);
     const pe=activeJourney.expenses.filter(e=>e.type==='personal').reduce((s,e)=>s+e.amount,0);
+    const uberCounterVal=endUberCounter||0;
+    const iNX=Math.max(0,(endNX-(sw.nx||0))+gNX);
+    const iMP=Math.max(0,(endMP-(sw.mp||0))+gMP);
+    const iC=Math.max(0,(endCash-(sw.cash||0))+gC);
+    const iU=Math.max(0,(endUber-(sw.uber||0)));
+    const iCaja=endCaja||0;
+    let bruta;
+    if(uberCounterVal>0){
+        bruta=uberCounterVal+iNX+iMP+iC+iCaja;
+    } else {
+        bruta=iNX+iMP+iC+iU+iCaja;
+    }
     activeJourney.endTime=new Date().toISOString();activeJourney.endKm=endKm;activeJourney.uberCounter=endUberCounter;
     activeJourney.endWallets={nx:endNX,mp:endMP,cash:endCash,uber:endUber};
     activeJourney.kmTraveled=endKm-activeJourney.startKm;
@@ -1373,7 +1449,50 @@ function updateDashboard(){
 function updateHistory(){
     const el=document.getElementById('historyList');
     if(!journeys.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div>No hay jornadas registradas</div></div>';return;}
-    el.innerHTML=[...journeys].reverse().map(j=>{const d=new Date(j.startTime);return`<div class="history-item"><div class="history-header"><div><div class="history-date">${d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})}</div><div style="font-size:0.75rem;color:var(--text-secondary);">${d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div></div><div class="history-earning">${fc(j.earnings?.neta||0)}</div></div><div class="history-details"><div class="history-detail"><span>KM:</span><span>${(j.kmTraveled||0).toFixed(0)}</span></div><div class="history-detail"><span>Combustible:</span><span>-${fc(j.earnings?.fuel||0)}</span></div><div class="history-detail"><span>Gastos Moto:</span><span>-${fc(j.earnings?.moto||0)}</span></div><div class="history-detail"><span>Gastos Pers.:</span><span>-${fc(j.earnings?.personal||0)}</span></div></div></div>`;}).join('');
+    el.innerHTML=[...journeys].reverse().map(j=>{const d=new Date(j.startTime);return`<div class="history-item" onclick="showJourneyDetail(${j._dbId||j.id})" style="cursor:pointer;"><div class="history-header"><div><div class="history-date">${d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})}</div><div style="font-size:0.75rem;color:var(--text-secondary);">${d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div></div><div class="history-earning">${fc(j.earnings?.neta||0)}</div></div><div class="history-details"><div class="history-detail"><span>KM:</span><span>${(j.kmTraveled||0).toFixed(0)}</span></div><div class="history-detail"><span>Bruta:</span><span>${fc(j.earnings?.bruta||0)}</span></div><div class="history-detail"><span>Combustible:</span><span>-${fc(j.earnings?.fuel||0)}</span></div><div class="history-detail"><span>Gastos Pers.:</span><span>-${fc(j.earnings?.personal||0)}</span></div></div><div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.3rem;text-align:right;">Ver detalle →</div></div>`;}).join('');
+}
+
+function showJourneyDetail(id){
+    const j=journeys.find(jj=>(jj._dbId||jj.id)===id);
+    if(!j)return;
+    const d=new Date(j.startTime);
+    const sw=j.startWallets||{};
+    const ew=j.endWallets||{};
+    const rs='display:flex;justify-content:space-between;margin-bottom:0.4rem;font-size:0.85rem;';
+    let html=`<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;">${d.toLocaleDateString('es-AR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}</div>`;
+    // Recaudación
+    html+=`<div style="background:var(--bg-tertiary);border-radius:10px;padding:0.85rem;margin-bottom:0.75rem;">`;
+    html+=`<div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;margin-bottom:0.5rem;">💰 Recaudación</div>`;
+    if(j.uberCounter>0)html+=`<div style="${rs}"><span>Uber (contador)</span><span style="color:var(--accent-green);font-family:monospace;font-weight:700;">${fc(j.uberCounter)}</span></div>`;
+    const dNX=Math.max(0,(ew.nx||0)-(sw.nx||0));
+    const dMP=Math.max(0,(ew.mp||0)-(sw.mp||0));
+    const dC=Math.max(0,(ew.cash||0)-(sw.cash||0));
+    const dU=Math.max(0,(ew.uber||0)-(sw.uber||0));
+    if(dNX>0)html+=`<div style="${rs}"><span>NX (directo)</span><span style="color:var(--accent-green);font-family:monospace;">+${fc(dNX)}</span></div>`;
+    if(dMP>0)html+=`<div style="${rs}"><span>MP (directo)</span><span style="color:var(--accent-green);font-family:monospace;">+${fc(dMP)}</span></div>`;
+    if(dC>0)html+=`<div style="${rs}"><span>Efectivo</span><span style="color:var(--accent-green);font-family:monospace;">+${fc(dC)}</span></div>`;
+    html+=`<div style="${rs}border-top:1px solid var(--border);padding-top:0.4rem;margin-top:0.2rem;font-weight:700;"><span>Bruta</span><span style="color:var(--accent-green);font-family:monospace;">${fc(j.earnings?.bruta||0)}</span></div>`;
+    html+=`</div>`;
+    // Gastos
+    html+=`<div style="background:var(--bg-tertiary);border-radius:10px;padding:0.85rem;margin-bottom:0.75rem;">`;
+    html+=`<div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;margin-bottom:0.5rem;">📋 Gastos</div>`;
+    if(j.earnings?.fuel>0)html+=`<div style="${rs}"><span>⛽ Combustible</span><span style="color:var(--accent-orange);font-family:monospace;">-${fc(j.earnings.fuel)}</span></div>`;
+    if(j.earnings?.moto>0)html+=`<div style="${rs}"><span>🔧 Moto</span><span style="color:var(--accent-blue);font-family:monospace;">-${fc(j.earnings.moto)}</span></div>`;
+    if(j.earnings?.personal>0)html+=`<div style="${rs}"><span>🍔 Personales</span><span style="color:var(--accent-red);font-family:monospace;">-${fc(j.earnings.personal)}</span></div>`;
+    if(!j.earnings?.fuel&&!j.earnings?.moto&&!j.earnings?.personal)html+=`<div style="color:var(--text-secondary);font-size:0.8rem;">Sin gastos</div>`;
+    html+=`</div>`;
+    // Saldos
+    html+=`<div style="background:var(--bg-tertiary);border-radius:10px;padding:0.85rem;margin-bottom:0.75rem;">`;
+    html+=`<div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;margin-bottom:0.5rem;">💳 Saldos de billeteras</div>`;
+    [{l:'NX',s:sw.nx,e:ew.nx},{l:'MP',s:sw.mp,e:ew.mp},{l:'Efectivo',s:sw.cash,e:ew.cash},{l:'Uber Wallet',s:sw.uber,e:ew.uber}].forEach(w=>{if(w.s||w.e)html+=`<div style="${rs}"><span>${w.l}</span><span style="font-family:monospace;font-size:0.8rem;">${fc(w.s||0)} → ${fc(w.e||0)}</span></div>`;});
+    html+=`</div>`;
+    // KM y resultado
+    html+=`<div style="background:rgba(74,222,128,0.08);border:1px solid var(--accent-green);border-radius:10px;padding:0.85rem;">`;
+    html+=`<div style="${rs}"><span>KM recorridos</span><span style="font-family:monospace;">${(j.kmTraveled||0).toFixed(0)} km</span></div>`;
+    html+=`<div style="${rs}font-size:1rem;font-weight:700;border-top:1px solid var(--accent-green);padding-top:0.4rem;margin-top:0.2rem;"><span>🏁 Neta</span><span style="color:var(--accent-green);font-family:monospace;">${fc(j.earnings?.neta||0)}</span></div>`;
+    html+=`</div>`;
+    document.getElementById('journeyDetailContent').innerHTML=html;
+    document.getElementById('journeyDetailModal').classList.add('active');
 }
 
 // ── MANTENIMIENTO ─────────────────────────────
@@ -1473,6 +1592,58 @@ function importData(event){const file=event.target.files[0];if(!file)return;cons
 function closeModal(id){document.getElementById(id).classList.remove('active');}
 function fc(n){return'$'+(n||0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active');}));
+
+// ── PRÉSTAMOS ─────────────────────────────────
+let loans = [];
+
+async function dbLoadLoans(){
+    if(dbOk){try{const{data}=await db.from('app_data').select('value').eq('key','loans').maybeSingle();if(data){const v=JSON.parse(data.value);localStorage.setItem('loans',JSON.stringify(v));return v;}}catch(e){console.warn(e.message);}}
+    const s=localStorage.getItem('loans');return s?JSON.parse(s):[];
+}
+
+async function dbSaveLoans(){
+    localStorage.setItem('loans',JSON.stringify(loans));
+    if(!dbOk)return;
+    try{const{data:ex}=await db.from('app_data').select('id').eq('key','loans').maybeSingle();if(ex)await db.from('app_data').update({value:JSON.stringify(loans)}).eq('key','loans');else await db.from('app_data').insert({key:'loans',value:JSON.stringify(loans)});}catch(e){console.warn(e.message);}
+}
+
+function showAddLoanModal(){document.getElementById('loanDesc').value='';document.getElementById('loanAmount').value='';document.getElementById('addLoanModal').classList.add('active');}
+
+async function saveLoan(){
+    const desc=document.getElementById('loanDesc').value.trim();
+    const amount=parseFloat(document.getElementById('loanAmount').value)||0;
+    if(!desc||!amount)return;
+    loans.push({id:Date.now(),desc,amount,date:new Date().toISOString().split('T')[0]});
+    await dbSaveLoans();
+    closeModal('addLoanModal');
+    updateMonthlySummary();
+}
+
+async function deleteLoan(id){
+    loans=loans.filter(l=>l.id!==id);
+    await dbSaveLoans();
+    updateMonthlySummary();
+}
+
+function updateMonthlySummary(){
+    const now=new Date(),cm=now.getMonth(),cy=now.getFullYear();
+    const mj=journeys.filter(j=>{const d=new Date(j.startTime);return d.getMonth()===cm&&d.getFullYear()===cy;});
+    const bruta=mj.reduce((s,j)=>s+(j.earnings?.bruta||0),0);
+    const fuel=mj.reduce((s,j)=>s+(j.earnings?.fuel||0),0);
+    const moto=mj.reduce((s,j)=>s+(j.earnings?.moto||0),0);
+    const pers=mj.reduce((s,j)=>s+(j.earnings?.personal||0),0);
+    const neta=mj.reduce((s,j)=>s+(j.earnings?.neta||0),0);
+    document.getElementById('summaryBruta').textContent=fc(bruta);
+    document.getElementById('summaryFuel').textContent='-'+fc(fuel);
+    document.getElementById('summaryMoto').textContent='-'+fc(moto);
+    document.getElementById('summaryPersonal').textContent='-'+fc(pers);
+    document.getElementById('summaryNeta').textContent=fc(neta);
+    const totalL=loans.reduce((s,l)=>s+l.amount,0);
+    document.getElementById('totalLoans').textContent=totalL>0?('-'+fc(totalL)):'$0';
+    const ll=document.getElementById('loansList');
+    if(!loans.length){ll.innerHTML='<div style="font-size:0.8rem;color:var(--text-secondary);text-align:center;padding:0.3rem;">Sin préstamos cargados</div>';return;}
+    ll.innerHTML=loans.map(l=>`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;font-size:0.82rem;background:rgba(248,113,113,0.08);border-radius:6px;padding:0.35rem 0.5rem;"><span>${l.desc} <span style="color:var(--text-secondary);font-size:0.72rem;">${l.date}</span></span><div style="display:flex;align-items:center;gap:0.5rem;"><span style="font-family:monospace;color:var(--accent-red);font-weight:700;">-${fc(l.amount)}</span><button onclick="deleteLoan(${l.id})" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:0.85rem;padding:0;">✕</button></div></div>`).join('');
+}
 
 // ── CONFIGURACIÓN ────────────────────────────
 let appConfig = { cuota: 475648, fuelFallback: 5000, motoFallback: 2000, fuelPrice: 2020 };
